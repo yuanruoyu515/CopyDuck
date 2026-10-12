@@ -6,7 +6,7 @@ import ServiceManagement
 final class SettingsModel: ObservableObject {
     @Published var shortcut: Shortcut
     @Published var recording = false
-    @Published var installed = InputSources.isInstalled
+    @Published var installed = InputSources.hasInstalledComponent
     @Published var ready = false
     @Published var loginEnabled = false
     @Published var loginPending = false
@@ -23,8 +23,8 @@ final class SettingsModel: ObservableObject {
         Insertion.shared.report = { [weak self] text, error in self?.message = text; self?.messageIsError = error; if error { NSSound.beep() } }
     }
     func refresh() {
-        installed = InputSources.isInstalled
-        ready = installed && InputSources.ready
+        installed = InputSources.hasInstalledComponent
+        ready = InputSources.isComponentProcess && InputSources.ready
         loginEnabled = SMAppService.mainApp.status == .enabled
         loginPending = SMAppService.mainApp.status == .requiresApproval
     }
@@ -118,15 +118,15 @@ struct SettingsView: View {
                     }
                     Spacer()
                     Toggle("开机启动", isOn: Binding(get: { model.loginEnabled }, set: model.setLogin))
-                        .labelsHidden().toggleStyle(.switch).disabled(!model.installed)
+                        .labelsHidden().toggleStyle(.switch).disabled(!InputSources.isComponentProcess)
                 }.padding(20)
             }.background(Color(red: 0.965, green: 0.967, blue: 0.963)).clipShape(RoundedRectangle(cornerRadius: 16))
             if !model.ready {
                 HStack {
-                    Text(model.installed ? "第一次安装可能需要重新登录。" : "先将复制鸭安装为 Mac 输入组件。").font(.system(size: 12)).foregroundStyle(muted)
+                    Text(InputSources.isComponentProcess ? "第一次安装可能需要重新登录。" : (model.installed ? "输入组件已安装，点击启动或修复。" : "先将复制鸭安装为 Mac 输入组件。")).font(.system(size: 12)).foregroundStyle(muted)
                     Spacer()
-                    Button(model.installed ? "启用输入组件" : "安装输入组件") {
-                        if model.installed { model.enableInput() } else { model.installAction?() }
+                    Button(InputSources.isComponentProcess ? "启用输入组件" : (model.installed ? "启动输入组件" : "安装输入组件")) {
+                        if InputSources.isComponentProcess { model.enableInput() } else { model.installAction?() }
                     }.buttonStyle(.borderedProminent).tint(ink)
                 }
             }
@@ -139,7 +139,7 @@ struct SettingsView: View {
             HStack {
                 Text("关掉窗口，鸭还在菜单栏。").font(.system(size: 11)).foregroundStyle(muted)
                 Spacer()
-                Text("1.0").font(.system(size: 11, design: .monospaced)).foregroundStyle(muted)
+                Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "").font(.system(size: 11, design: .monospaced)).foregroundStyle(muted)
             }
         }
         .padding(28).frame(width: 510, height: 474).background(Color.white).foregroundStyle(ink).preferredColorScheme(.light)

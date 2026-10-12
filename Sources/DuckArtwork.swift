@@ -7,6 +7,63 @@ enum DuckArtwork {
         let transform = NSAffineTransform()
         transform.scale(by: size / 1024)
         transform.concat()
+        draw(background: background, template: template)
+        image.unlockFocus()
+        image.isTemplate = template
+        return image
+    }
+
+    // Use the visible glyph bounds, rather than the app icon's padded square.
+    // Explicit 1x/2x representations also give the input-source menu the correct point size.
+    static func menuIcon(size: CGFloat) -> NSImage {
+        let image = NSImage(size: NSSize(width: size, height: size))
+        let bounds = templateBounds
+        for density in [1, 2] {
+            let pixels = Int(size) * density
+            let bitmap = makeBitmap(pixels: pixels)
+            let context = NSGraphicsContext(bitmapImageRep: bitmap)!
+            NSGraphicsContext.saveGraphicsState()
+            NSGraphicsContext.current = context
+            let scale = (size - 2) * CGFloat(density) / max(bounds.width, bounds.height)
+            context.cgContext.translateBy(x: CGFloat(pixels) / 2 - bounds.midX * scale,
+                                          y: CGFloat(pixels) / 2 - bounds.midY * scale)
+            context.cgContext.scaleBy(x: scale, y: scale)
+            draw(background: false, template: true)
+            NSGraphicsContext.restoreGraphicsState()
+            bitmap.size = image.size
+            image.addRepresentation(bitmap)
+        }
+        image.isTemplate = true
+        return image
+    }
+
+    private static func makeBitmap(pixels: Int) -> NSBitmapImageRep {
+        let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: pixels, pixelsHigh: pixels,
+                                      bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true,
+                                      isPlanar: false, colorSpaceName: .deviceRGB,
+                                      bytesPerRow: pixels * 4, bitsPerPixel: 32)!
+        bitmap.bitmapData!.initialize(repeating: 0, count: bitmap.bytesPerRow * pixels)
+        return bitmap
+    }
+
+    private static let templateBounds: NSRect = {
+        let bitmap = makeBitmap(pixels: 1024)
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: bitmap)
+        draw(background: false, template: true)
+        NSGraphicsContext.restoreGraphicsState()
+        let data = bitmap.bitmapData!
+        var minX = 1024, minY = 1024, maxX = 0, maxY = 0
+        for y in 0..<1024 {
+            for x in 0..<1024 where data[y * bitmap.bytesPerRow + x * 4 + 3] > 0 {
+                minX = min(minX, x); maxX = max(maxX, x)
+                minY = min(minY, y); maxY = max(maxY, y)
+            }
+        }
+        return NSRect(x: minX, y: 1023 - maxY, width: maxX - minX + 1, height: maxY - minY + 1)
+    }()
+
+    private static func draw(background: Bool, template: Bool) {
         if background {
             NSColor.white.setFill()
             NSBezierPath(rect: NSRect(x: 0, y: 0, width: 1024, height: 1024)).fill()
@@ -48,8 +105,5 @@ enum DuckArtwork {
             NSColor(calibratedRed: 1, green: 0.86, blue: 0.79, alpha: 1).setFill()
             NSBezierPath(ovalIn: NSRect(x: 605, y: 570, width: 38, height: 21)).fill()
         }
-        image.unlockFocus()
-        image.isTemplate = template
-        return image
     }
 }

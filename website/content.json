@@ -1,0 +1,325 @@
+{
+  "repository": "https://github.com/yuanruoyu515/CopyDuck",
+  "homepage": "https://yuanruoyu515.github.io/CopyDuck/",
+  "version": "1.1",
+  "languages": {
+    "zh-Hans": {
+      "name": "复制鸭",
+      "tagline": "复制一下，鸭来输入。",
+      "description": "一个简单的 macOS 菜单栏工具。按下自定义快捷键，通过系统输入法，把最新复制的文字写入当前输入框。",
+      "skip": "跳到主要内容",
+      "language": "选择语言",
+      "download": "下载 1.1",
+      "source": "查看源码",
+      "compatibility": "Apple Silicon · macOS 14 及以上 · 已在 macOS 27.0.1 实测",
+      "eyebrow": "给 Mac 的小鸭子",
+      "heroTitle": [
+        "复制一下，",
+        "鸭来输入。"
+      ],
+      "example": "使用示意 · 默认快捷键",
+      "exampleText": "你好，复制鸭 🦆",
+      "exampleCaption": "复制文字 → 点击输入位置 → 按下快捷键",
+      "howTitle": "像输入法一样，把文字写进去。",
+      "howBody": "复制鸭可以添加到“简体中文”输入法列表。触发快捷键时，它读取剪贴板、临时切换输入源、提交文字，再恢复你原来的输入法。",
+      "steps": [
+        [
+          "复制",
+          "复制一段纯文字。"
+        ],
+        [
+          "定位",
+          "点击要输入文字的位置。"
+        ],
+        [
+          "输入",
+          "按下快捷键，鸭来写进去。"
+        ]
+      ],
+      "features": [
+        [
+          "你的快捷键",
+          "默认 ⌃⌥V，也可以在设置中换成顺手的组合。"
+        ],
+        [
+          "待在菜单栏",
+          "不占 Dock；关掉设置窗口，仍在后台等你。"
+        ],
+        [
+          "开机启动可选",
+          "需要时开启，登录 Mac 后自动运行。"
+        ],
+        [
+          "文字留在本机",
+          "按快捷键时才读取剪贴板，不保存历史，不连接网络。"
+        ]
+      ],
+      "installTitle": "第一次安装，三步就好。",
+      "installSteps": [
+        "下载 DMG，把“复制鸭”拖进“应用程序”。",
+        "打开复制鸭，首次点击“安装输入组件”。",
+        "看到“输入组件已就绪”后，复制文字，再到输入框按快捷键。"
+      ],
+      "installNote": "1.1 会自动启动已安装的组件。打开新版时，也会自动更新组件并保留快捷键。",
+      "downloadsTitle": "两个版本，都留着。",
+      "recommended": "推荐",
+      "legacy": "初始版本",
+      "releaseNotes": "发布说明",
+      "appZip": "App 压缩包",
+      "changes": "1.1 修复重复安装才能工作的问题，并调整菜单栏和输入法菜单里的鸭子图标；1.0 保留最初的功能版本。",
+      "faqTitle": "使用前，你可能想知道。",
+      "faq": [
+        [
+          "支持哪些内容？",
+          "支持纯文字，包括中文、英文、换行和表情；不支持图片、文件或富文本格式。目标输入框需要支持系统输入法，部分安全输入框或自定义控件可能限制输入。"
+        ],
+        [
+          "找不到输入组件怎么办？",
+          "在系统设置 → 键盘 → 文本输入 → 编辑 → ＋ → 简体中文中添加“复制鸭”，再重新打开应用。个别首次安装需要注销并重新登录。"
+        ],
+        [
+          "下载后出现系统安全提示？",
+          "目前提供本机签名版本，尚未使用 Developer ID 签名或 Apple 公证。在其他 Mac 上打开时，系统可能要求在“隐私与安全性”中确认。"
+        ],
+        [
+          "怎么退出或卸载？",
+          "从菜单栏选择“退出复制鸭”。卸载前关闭开机启动，在系统键盘设置移除输入法，再移走应用程序和 ~/Library/Input Methods/复制鸭.app。"
+        ]
+      ],
+      "footer": "一只安静待在菜单栏的小鸭子。",
+      "readmeFeatures": "功能",
+      "readmeDownload": "下载",
+      "readmeInstall": "安装与使用",
+      "readmeImplementation": "工作原理",
+      "readmeBuild": "从源码构建",
+      "readmeVersions": "版本记录",
+      "readmeNotes": "使用范围与签名",
+      "homeLink": "三语介绍页",
+      "allReleases": "所有版本",
+      "buildBody": "安装 Apple Command Line Tools 和 Python 3 后，在项目目录运行：",
+      "buildOutput": "生成 build/复制鸭.app。正式构建不会包含测试触发入口。项目使用系统框架，无第三方运行依赖。",
+      "testBody": "检查菜单图标在普通和 Retina 尺寸下是否居中：",
+      "packBody": "生成 App 压缩包和带拖拽布局的 DMG：",
+      "guideBody": "Git 历史保留 v1.0 与 v1.1 标签；后续修改直接在 main 分支维护。发布流程见",
+      "developerGuide": "开发说明",
+      "tableLabels": [
+        "版本",
+        "下载",
+        "说明"
+      ],
+      "defaultShortcut": "默认快捷键"
+    },
+    "zh-Hant": {
+      "name": "複製鴨",
+      "tagline": "複製一下，鴨來輸入。",
+      "description": "一個簡單的 macOS 選單列工具。按下自訂快捷鍵，透過系統輸入法，把最新複製的文字寫入目前的輸入框。",
+      "skip": "跳至主要內容",
+      "language": "選擇語言",
+      "download": "下載 1.1",
+      "source": "檢視原始碼",
+      "compatibility": "Apple Silicon · macOS 14 以上 · 已在 macOS 27.0.1 實測",
+      "eyebrow": "給 Mac 的小鴨子",
+      "heroTitle": [
+        "複製一下，",
+        "鴨來輸入。"
+      ],
+      "example": "使用示意 · 預設快捷鍵",
+      "exampleText": "你好，複製鴨 🦆",
+      "exampleCaption": "複製文字 → 點選輸入位置 → 按下快捷鍵",
+      "howTitle": "像輸入法一樣，把文字寫進去。",
+      "howBody": "複製鴨可以加入「簡體中文」輸入法列表。觸發快捷鍵時，它讀取剪貼簿、暫時切換輸入來源、提交文字，再恢復原本的輸入法。",
+      "steps": [
+        [
+          "複製",
+          "複製一段純文字。"
+        ],
+        [
+          "定位",
+          "點選要輸入文字的位置。"
+        ],
+        [
+          "輸入",
+          "按下快捷鍵，鴨來寫進去。"
+        ]
+      ],
+      "features": [
+        [
+          "你的快捷鍵",
+          "預設 ⌃⌥V，也可以在設定中換成順手的組合。"
+        ],
+        [
+          "待在選單列",
+          "不占 Dock；關閉設定視窗，仍在背景等你。"
+        ],
+        [
+          "登入時啟動可選",
+          "需要時開啟，登入 Mac 後自動執行。"
+        ],
+        [
+          "文字留在本機",
+          "按快捷鍵時才讀取剪貼簿，不儲存歷史，不連接網路。"
+        ]
+      ],
+      "installTitle": "第一次安裝，三步就好。",
+      "installSteps": [
+        "下載 DMG，把「复制鸭」拖進「應用程式」。",
+        "開啟複製鴨，首次點選「安装输入组件」。",
+        "看到「输入组件已就绪」後，複製文字，再到輸入框按快捷鍵。"
+      ],
+      "installNote": "1.1 會自動啟動已安裝的元件。開啟新版時，也會自動更新元件並保留快捷鍵。",
+      "downloadsTitle": "兩個版本，都留著。",
+      "recommended": "推薦",
+      "legacy": "初始版本",
+      "releaseNotes": "版本說明",
+      "appZip": "App 壓縮檔",
+      "changes": "1.1 修復每次需重新安裝才會運作的問題，並調整選單列與輸入法選單中的鴨子圖示；1.0 保留最初的功能版本。",
+      "faqTitle": "使用前，你可能想知道。",
+      "faq": [
+        [
+          "支援哪些內容？",
+          "支援純文字，包括中文、英文、換行和表情；不支援圖片、檔案或富文字格式。目標輸入框須支援系統輸入法，部分安全輸入框或自訂控制項可能限制輸入。"
+        ],
+        [
+          "找不到輸入元件怎麼辦？",
+          "在系統設定 → 鍵盤 → 文字輸入 → 編輯 → ＋ → 簡體中文中加入「复制鸭」，再重新開啟應用程式。個別首次安裝需要登出並重新登入。"
+        ],
+        [
+          "下載後出現系統安全提示？",
+          "目前提供本機簽署版本，尚未使用 Developer ID 簽署或 Apple 公證。在其他 Mac 上開啟時，系統可能要求在「隱私權與安全性」中確認。"
+        ],
+        [
+          "如何結束或移除？",
+          "從選單列選擇「退出复制鸭」。移除前關閉登入時啟動，在系統鍵盤設定移除輸入法，再移走應用程式與 ~/Library/Input Methods/复制鸭.app。"
+        ]
+      ],
+      "footer": "一隻安靜待在選單列的小鴨子。",
+      "readmeFeatures": "功能",
+      "readmeDownload": "下載",
+      "readmeInstall": "安裝與使用",
+      "readmeImplementation": "運作原理",
+      "readmeBuild": "從原始碼建置",
+      "readmeVersions": "版本紀錄",
+      "readmeNotes": "使用範圍與簽署",
+      "homeLink": "三語介紹頁",
+      "allReleases": "所有版本",
+      "buildBody": "安裝 Apple Command Line Tools 與 Python 3 後，在專案目錄執行：",
+      "buildOutput": "產生 build/复制鸭.app。正式建置不包含測試觸發入口。專案使用系統框架，沒有第三方執行相依套件。",
+      "testBody": "檢查選單圖示在一般與 Retina 尺寸下是否置中：",
+      "packBody": "產生 App 壓縮檔與可拖曳安裝的 DMG：",
+      "guideBody": "Git 歷史保留 v1.0 與 v1.1 標籤；後續修改直接在 main 分支維護。發佈流程請見",
+      "developerGuide": "開發說明",
+      "tableLabels": [
+        "版本",
+        "下載",
+        "說明"
+      ],
+      "defaultShortcut": "預設快捷鍵"
+    },
+    "en": {
+      "name": "CopyDuck",
+      "tagline": "Copy it. Let the duck type.",
+      "description": "A simple macOS menu bar utility. Use a customizable shortcut to insert the latest clipboard text through the system input method.",
+      "skip": "Skip to content",
+      "language": "Choose language",
+      "download": "Download 1.1",
+      "source": "View source",
+      "compatibility": "Apple Silicon · macOS 14 or later · Tested on macOS 27.0.1",
+      "eyebrow": "A little duck for your Mac",
+      "heroTitle": [
+        "Copy it.",
+        "Let the duck type."
+      ],
+      "example": "Illustration · Default shortcut",
+      "exampleText": "Hello, CopyDuck 🦆",
+      "exampleCaption": "Copy text → Click an input field → Press your shortcut",
+      "howTitle": "Give your clipboard an input method.",
+      "howBody": "CopyDuck appears under Simplified Chinese input sources. When you press the shortcut, it reads the clipboard, temporarily selects its input source, commits the text, then restores your previous input method.",
+      "steps": [
+        [
+          "Copy",
+          "Copy some plain text."
+        ],
+        [
+          "Focus",
+          "Click where you want to type."
+        ],
+        [
+          "Insert",
+          "Press your shortcut. Let the duck type."
+        ]
+      ],
+      "features": [
+        [
+          "Your shortcut",
+          "Start with ⌃⌥V, or choose your own in Settings."
+        ],
+        [
+          "A home in the menu bar",
+          "No Dock icon. Closing Settings keeps the duck running."
+        ],
+        [
+          "Optional launch at login",
+          "Enable it when you want CopyDuck ready after login."
+        ],
+        [
+          "Text stays on your Mac",
+          "Reads the clipboard only when triggered. No history, no network connection."
+        ]
+      ],
+      "installTitle": "Three steps to get started.",
+      "installSteps": [
+        "Download the DMG and drag “复制鸭” into Applications.",
+        "Open CopyDuck and click “安装输入组件” (Install input component) on first use.",
+        "Once “输入组件已就绪” (Input component ready) appears, copy text, focus a field and press your shortcut."
+      ],
+      "installNote": "Version 1.1 starts an installed component automatically. Opening a newer build also updates the component while preserving your shortcut.",
+      "downloadsTitle": "Both versions, kept for you.",
+      "recommended": "Recommended",
+      "legacy": "Original release",
+      "releaseNotes": "Release notes",
+      "appZip": "App ZIP",
+      "changes": "1.1 fixes the repeated-install startup issue and centers the duck icons in the menu bar and input source menu. 1.0 preserves the original feature release.",
+      "faqTitle": "A few things to know.",
+      "faq": [
+        [
+          "What can it insert?",
+          "Plain text, including Chinese, English, line breaks and emoji. Images, files and rich text are not supported. The target field must support system input methods; some secure fields or custom controls may restrict input."
+        ],
+        [
+          "What if the input component is missing?",
+          "Add “复制鸭” under System Settings → Keyboard → Text Input → Edit → ＋ → Simplified Chinese, then reopen the app. Some first-time installations require logging out and back in."
+        ],
+        [
+          "Why does macOS show a security prompt?",
+          "The downloads are locally signed, without Developer ID signing or Apple notarization. Another Mac may require confirmation in Privacy & Security before opening the app."
+        ],
+        [
+          "How do I quit or uninstall it?",
+          "Choose “退出复制鸭” (Quit CopyDuck) in its menu. Before uninstalling, disable launch at login, remove its keyboard input source, then remove the app from Applications and ~/Library/Input Methods/复制鸭.app."
+        ]
+      ],
+      "footer": "A quiet little duck in your menu bar.",
+      "readmeFeatures": "Features",
+      "readmeDownload": "Downloads",
+      "readmeInstall": "Install and use",
+      "readmeImplementation": "How it works",
+      "readmeBuild": "Build from source",
+      "readmeVersions": "Version history",
+      "readmeNotes": "Compatibility and signing",
+      "homeLink": "Three-language introduction",
+      "allReleases": "All releases",
+      "buildBody": "Install Apple Command Line Tools and Python 3, then run from the project directory:",
+      "buildOutput": "Produces build/复制鸭.app. Release builds exclude the test trigger. The app uses system frameworks and has no third-party runtime dependencies.",
+      "testBody": "Check icon alignment at standard and Retina resolutions:",
+      "packBody": "Generate an App ZIP and a drag-to-install DMG:",
+      "guideBody": "Git history preserves the v1.0 and v1.1 tags. Maintain future changes on main. See the release workflow in",
+      "developerGuide": "the development guide",
+      "tableLabels": [
+        "Version",
+        "Download",
+        "Notes"
+      ],
+      "defaultShortcut": "Default shortcut"
+    }
+  }
+}

@@ -4,32 +4,39 @@ import InputMethodKit
 import SwiftUI
 import CoreServices
 import Darwin
+import OSLog
 
 final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMenuDelegate {
     private var server: IMKServer?
     private var statusItem: NSStatusItem!
     private var window: NSWindow?
     private let model = SettingsModel()
+    private let logger = Logger(subsystem: InputSources.bundleID, category: "Startup")
+    private var installing = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
-        if !InputSources.isInstalled,
-           NSRunningApplication.runningApplications(withBundleIdentifier: InputSources.bundleID).contains(where: {
-               $0.processIdentifier != ProcessInfo.processInfo.processIdentifier && $0.bundleURL?.standardizedFileURL == InputSources.installedURL.standardizedFileURL
-           }) {
-            DistributedNotificationCenter.default().postNotificationName(Notification.Name(InputSources.bundleID + ".ShowSettings"), object: nil, userInfo: nil, deliverImmediately: true)
-            NSApp.terminate(nil); return
+        model.installAction = { [weak self] in self?.startOrInstallComponent() }
+        if !InputSources.isComponentProcess && InputSources.hasInstalledComponent {
+            startOrInstallComponent()
+            return
         }
+        startInterface()
+    }
+    private func startInterface() {
+        guard statusItem == nil else { return }
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        statusItem.button?.image = DuckArtwork.image(size: 22, template: true)
+        statusItem.button?.image = DuckArtwork.menuIcon(size: 18)
+        statusItem.button?.imagePosition = .imageOnly
+        statusItem.button?.imageScaling = .scaleProportionallyDown
         statusItem.button?.toolTip = "复制鸭 · " + model.shortcut.display
         let menu = NSMenu(); menu.delegate = self; statusItem.menu = menu
-        model.installAction = { [weak self] in self?.install() }
-        if InputSources.isInstalled {
+        if InputSources.isComponentProcess {
             DistributedNotificationCenter.default().addObserver(forName: Notification.Name(InputSources.bundleID + ".ShowSettings"), object: nil, queue: .main) { [weak self] _ in self?.showSettings() }
             server = IMKServer(name: InputSources.connection, bundleIdentifier: InputSources.bundleID)
             _ = InputSources.register(); _ = InputSources.enable()
             model.startShortcut()
+            logger.info("Input component started; input source ready: \(InputSources.ready)")
             #if DEBUG
             DistributedNotificationCenter.default().addObserver(forName: Notification.Name(InputSources.bundleID + ".TestTrigger"), object: nil, queue: .main) { _ in
                 Insertion.shared.trigger()
@@ -75,8 +82,42 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     func applicationDidBecomeActive(_ notification: Notification) { model.refresh() }
     @objc private func quit() { Insertion.shared.stop(); NSApp.terminate(nil) }
     func applicationWillTerminate(_ notification: Notification) { Insertion.shared.stop(); model.stopRecording() }
+    private func startOrInstallComponent() {
+        if InputSources.hasInstalledComponent && !InputSources.componentNeedsUpdate { launchComponent() }
+        else { install() }
+    }
+    private func launchComponent() {
+        if !InputSources.runningComponents.isEmpty {
+            logger.info("Opening settings in the running input component")
+            DistributedNotificationCenter.default().postNotificationName(Notification.Name(InputSources.bundleID + ".ShowSettings"), object: nil, userInfo: nil, deliverImmediately: true)
+            NSApp.terminate(nil)
+            return
+        }
+        logger.info("Automatically launching the installed input component")
+        _ = LSRegisterURL(InputSources.installedURL as CFURL, true)
+        let configuration = NSWorkspace.OpenConfiguration()
+        configuration.arguments = ["--settings"]
+        // The launcher and input component share a bundle ID, so use the requested path explicitly.
+        configuration.createsNewApplicationInstance = true
+        NSWorkspace.shared.openApplication(at: InputSources.installedURL, configuration: configuration) { _, error in
+            DispatchQueue.main.async {
+                if let error { self.showFailure("启动未完成：\(error.localizedDescription)") }
+                else { NSApp.terminate(nil) }
+            }
+        }
+    }
+    private func showFailure(_ message: String) {
+        startInterface()
+        model.message = message; model.messageIsError = true
+        showSettings()
+    }
     private func install() {
+        guard !installing else { return }
+        installing = true
         let destination = InputSources.installedURL
+        let transaction = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Application Support/复制鸭/Updates/\(UUID().uuidString)")
+        let staged = transaction.appendingPathComponent("复制鸭.app")
         do {
             let fm = FileManager.default
             try fm.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -84,25 +125,56 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
                 guard let previous = Bundle(url: destination), previous.bundleIdentifier == InputSources.bundleID else {
                     throw NSError(domain: "CopyDuck", code: 1, userInfo: [NSLocalizedDescriptionKey: "安装位置已有另一个同名应用，请先移走它。"])
                 }
-                let running = NSRunningApplication.runningApplications(withBundleIdentifier: InputSources.bundleID).filter { $0.processIdentifier != ProcessInfo.processInfo.processIdentifier }
-                if !running.isEmpty {
-                    throw NSError(domain: "CopyDuck", code: 2, userInfo: [NSLocalizedDescriptionKey: "请先从菜单栏退出已安装的复制鸭，再安装更新。"])
-                }
-                let backup = destination.deletingLastPathComponent().appendingPathComponent("复制鸭.backup-\(UUID().uuidString).app")
-                try fm.moveItem(at: destination, to: backup)
-                do { try fm.copyItem(at: Bundle.main.bundleURL, to: destination); try fm.removeItem(at: backup) }
-                catch { try? fm.removeItem(at: destination); try? fm.moveItem(at: backup, to: destination); throw error }
-            } else { try fm.copyItem(at: Bundle.main.bundleURL, to: destination) }
-            _ = LSRegisterURL(destination as CFURL, true)
-            _ = TISRegisterInputSource(destination as CFURL)
-            let configuration = NSWorkspace.OpenConfiguration(); configuration.arguments = ["--settings"]; configuration.createsNewApplicationInstance = true
-            NSWorkspace.shared.openApplication(at: destination, configuration: configuration) { _, error in
-                DispatchQueue.main.async {
-                    if let error { self.model.message = error.localizedDescription; self.model.messageIsError = true }
-                    else { NSApp.terminate(nil) }
+            }
+            try fm.createDirectory(at: transaction, withIntermediateDirectories: true)
+            try fm.copyItem(at: Bundle.main.bundleURL, to: staged)
+            let running = InputSources.runningComponents
+            for application in running {
+                guard application.terminate() else {
+                    throw NSError(domain: "CopyDuck", code: 2, userInfo: [NSLocalizedDescriptionKey: "暂时无法退出旧组件，请从菜单栏退出复制鸭后再打开。"])
                 }
             }
-        } catch { model.message = "安装未完成：\(error.localizedDescription)"; model.messageIsError = true }
+            completeInstall(staged: staged, transaction: transaction, waitingFor: running, deadline: Date().addingTimeInterval(5))
+        } catch {
+            try? FileManager.default.removeItem(at: transaction)
+            installing = false
+            showFailure("安装未完成：\(error.localizedDescription)")
+        }
+    }
+    private func completeInstall(staged: URL, transaction: URL, waitingFor running: [NSRunningApplication], deadline: Date) {
+        if running.contains(where: { !$0.isTerminated }) {
+            guard Date() < deadline else {
+                try? FileManager.default.removeItem(at: transaction)
+                installing = false
+                showFailure("旧组件尚未退出，请从菜单栏退出复制鸭后再打开。")
+                return
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                self?.completeInstall(staged: staged, transaction: transaction, waitingFor: running, deadline: deadline)
+            }
+            return
+        }
+        let fm = FileManager.default
+        let destination = InputSources.installedURL
+        let backup = transaction.appendingPathComponent("previous.app")
+        do {
+            if fm.fileExists(atPath: destination.path) { try fm.moveItem(at: destination, to: backup) }
+            do { try fm.moveItem(at: staged, to: destination) }
+            catch {
+                if fm.fileExists(atPath: backup.path) { try? fm.moveItem(at: backup, to: destination) }
+                throw error
+            }
+            _ = LSRegisterURL(destination as CFURL, true)
+            _ = InputSources.register(refreshIcons: true)
+            _ = InputSources.enable()
+            try? fm.removeItem(at: transaction)
+            installing = false
+            logger.info("Input component installed or updated")
+            launchComponent()
+        } catch {
+            installing = false
+            showFailure("安装未完成：\(error.localizedDescription)")
+        }
     }
 }
 
@@ -110,7 +182,12 @@ if CommandLine.arguments.contains("--diagnostics") {
     _ = NSApplication.shared
     let sources = InputSources.all().filter { InputSources.string($0, kTISPropertyBundleID) == InputSources.bundleID }
     let value: [String: Any] = [
-        "installed": InputSources.isInstalled,
+        "installed": InputSources.hasInstalledComponent,
+        "isComponentProcess": InputSources.isComponentProcess,
+        "componentNeedsUpdate": InputSources.componentNeedsUpdate,
+        "componentBuild": InputSources.installedBundle?.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "",
+        "runningComponentPIDs": InputSources.runningComponents.map { $0.processIdentifier },
+        "processBundlePath": Bundle.main.bundleURL.path,
         "currentSource": InputSources.string(InputSources.current(), kTISPropertyInputSourceID) ?? "unknown",
         "sources": sources.map { ["id": InputSources.string($0, kTISPropertyInputSourceID) ?? "", "enabled": InputSources.bool($0, kTISPropertyInputSourceIsEnabled), "selectable": InputSources.bool($0, kTISPropertyInputSourceIsSelectCapable)] as [String: Any] }
     ]
@@ -119,12 +196,14 @@ if CommandLine.arguments.contains("--diagnostics") {
     // InputMethodKit may launch the component again while a menu-bar instance is running.
     // Keep one owner of the input server and the global shortcut.
     var instanceLock: Int32 = -1
-    if InputSources.isInstalled {
+    if InputSources.isComponentProcess {
         let directory = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/复制鸭")
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         instanceLock = open(directory.appendingPathComponent("instance.lock").path, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)
         if instanceLock >= 0 && flock(instanceLock, LOCK_EX | LOCK_NB) != 0 {
-            DistributedNotificationCenter.default().postNotificationName(Notification.Name(InputSources.bundleID + ".ShowSettings"), object: nil, userInfo: nil, deliverImmediately: true)
+            if CommandLine.arguments.contains("--settings") {
+                DistributedNotificationCenter.default().postNotificationName(Notification.Name(InputSources.bundleID + ".ShowSettings"), object: nil, userInfo: nil, deliverImmediately: true)
+            }
             exit(0)
         }
     }

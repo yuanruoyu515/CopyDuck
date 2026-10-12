@@ -9,8 +9,8 @@
     <key>CFBundleDisplayName</key><string>复制鸭</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleSignature</key><string>DUCK</string>
-    <key>CFBundleVersion</key><string>1</string>
-    <key>CFBundleShortVersionString</key><string>1.0</string>
+    <key>CFBundleVersion</key><string>3</string>
+    <key>CFBundleShortVersionString</key><string>1.1</string>
     <key>CFBundleIconFile</key><string>CopyDuck.icns</string>
     <key>NSPrincipalClass</key><string>NSApplication</string>
     <key>LSMinimumSystemVersion</key><string>14.0</string>
@@ -22,7 +22,7 @@
     <key>TISInputSourceID</key><string>com.copyduck.inputmethod.CopyDuck.clipboard</string>
     <key>TISIntendedLanguage</key><string>zh-Hans</string>
     <key>tsInputMethodCharacterRepertoireKey</key><array><string>Hans</string><string>Hant</string><string>Latn</string></array>
-    <key>tsInputMethodIconFileKey</key><string>InputIcon.tiff</string>
+    <key>tsInputMethodIconFileKey</key><string>InputIcon-v2.tiff</string>
     <key>ComponentInputModeDict</key><dict>
         <key>tsInputModeListKey</key><dict>
             <key>com.copyduck.inputmethod.CopyDuck.clipboard</key><dict>
@@ -32,8 +32,8 @@
                 <key>tsInputModeIsVisibleKey</key><true/>
                 <key>tsInputModePrimaryInScriptKey</key><true/>
                 <key>tsInputModeScriptKey</key><string>smSimpChinese</string>
-                <key>tsInputModeMenuIconFileKey</key><string>InputIcon.tiff</string>
-                <key>tsInputModePaletteIconFileKey</key><string>InputIcon.tiff</string>
+                <key>tsInputModeMenuIconFileKey</key><string>InputIcon-v2.tiff</string>
+                <key>tsInputModePaletteIconFileKey</key><string>InputIcon-v2.tiff</string>
             </dict>
         </dict>
         <key>tsVisibleInputModeOrderedArrayKey</key><array><string>com.copyduck.inputmethod.CopyDuck.clipboard</string></array>

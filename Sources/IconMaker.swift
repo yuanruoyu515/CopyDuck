@@ -10,6 +10,7 @@ import AppKit
             let data = bitmap.representation(using: .png, properties: [:])!
             try data.write(to: directory.appendingPathComponent("duck-\(size).png"))
         }
-        try DuckArtwork.image(size: 32, template: true).tiffRepresentation!.write(to: directory.appendingPathComponent("InputIcon.tiff"))
+        try DuckArtwork.menuIcon(size: 16).tiffRepresentation!.write(to: directory.appendingPathComponent("InputIcon-v2.tiff"))
+        try DuckArtwork.menuIcon(size: 18).tiffRepresentation!.write(to: directory.appendingPathComponent("MenuIcon.tiff"))
     }
 }

@@ -18,7 +18,7 @@ for SIZE in 16 32 128 256 512; do
     cp "build/icons/duck-$DOUBLE.png" "build/CopyDuck.iconset/icon_${SIZE}x${SIZE}@2x.png"
 done
 python3 make_icns.py build/icons "$APP/Contents/Resources/CopyDuck.icns"
-cp build/icons/InputIcon.tiff "$APP/Contents/Resources/"
+cp build/icons/InputIcon-v2.tiff "$APP/Contents/Resources/"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 cp -R Resources/zh-Hans.lproj Resources/en.lproj "$APP/Contents/Resources/"
 codesign --force --sign - "$APP"
