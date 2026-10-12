@@ -29,8 +29,8 @@ Apple Silicon · macOS 14 or later · Tested on macOS 27.0.1
 ## Install and use
 
 1. Download the DMG and drag “复制鸭” into Applications.
-2. Open CopyDuck and click “安装输入组件” (Install input component) on first use.
-3. Once “输入组件已就绪” (Input component ready) appears, copy text, focus a field and press your shortcut.
+2. Open CopyDuck and click "Install input component" on first use.
+3. Once "Input component ready" appears, copy text, focus a field and press your shortcut.
 
 Version 1.1 starts an installed component automatically. Opening a newer build also updates the component while preserving your shortcut.
 
