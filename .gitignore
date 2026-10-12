@@ -1,0 +1,9 @@
+.DS_Store
+build/
+.release/
+.venv/
+__pycache__/
+*.py[cod]
+*.dmg
+*.app
+*.app.zip
