@@ -6,7 +6,13 @@
 
 **Copy it. Let the duck type.**
 
-A simple macOS menu bar utility. Use a customizable shortcut to insert the latest clipboard text through the system input method.
+💢 An input field blocks pasting or distinguishes pasted text from regular input, leaving you to type everything again?
+
+🐤 CopyDuck is a lightweight macOS menu bar utility. Press a shortcut to insert plain text from your clipboard into the active input field through the system input method. It helps with some websites and apps that disable pasting or intercept paste shortcuts while still supporting system input methods, saving you from retyping long passages. It supports Chinese, English, line breaks and emoji. All text processing happens locally on your Mac, with no uploads or clipboard history.
+
+## 💦 The inspiration
+
+The author was struggling to finish assignments in AP CSA when Albert was configured to block pasting. The workaround was to keep changing the input method’s text shortcuts to get the text into the field, bit by bit… That frustration led to CopyDuck.
 
 [Three-language introduction](https://yuanruoyu515.github.io/CopyDuck/en/index.html) · [All releases](https://github.com/yuanruoyu515/CopyDuck/releases)
 

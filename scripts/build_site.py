@@ -35,9 +35,9 @@ for language, text in config["languages"].items():
 <link rel="canonical" href="{homepage}{paths[language]}">{alternates}<link rel="icon" href="{prefix}assets/favicon.png"><link rel="stylesheet" href="{prefix}style.css"></head>
 <body><a class="skip" href="#main">{text['skip']}</a>
 <header><div class="top wrap"><a class="brand" href="{prefix}{paths[language]}"><img src="{prefix}assets/favicon.png" alt="" width="42" height="42">{text['name']}</a><nav class="language" aria-label="{text['language']}">{nav}</nav></div></header>
-<main id="main" class="wrap"><section class="hero"><div><p class="eyebrow">{text['eyebrow']}</p><h1>{text['heroTitle'][0]}<br>{text['heroTitle'][1]}</h1><p class="lead">{text['description']}</p><div class="actions"><a class="button primary" href="{download('1.1', 'dmg')}">{text['download']} <span aria-hidden="true">↓</span></a><a class="button" href="{repo}">{text['source']} <span aria-hidden="true">↗</span></a></div><p class="compatibility">{text['compatibility']}</p></div>
+<main id="main" class="wrap"><section class="hero"><div><p class="eyebrow">{text['eyebrow']}</p><h1>{text['heroTitle'][0]}<br>{text['heroTitle'][1]}</h1><p class="lead">{escape(text['pain'])}</p><p class="lead">{text['description']}</p><div class="actions"><a class="button primary" href="{download('1.1', 'dmg')}">{text['download']} <span aria-hidden="true">↓</span></a><a class="button" href="{repo}">{text['source']} <span aria-hidden="true">↗</span></a></div><p class="compatibility">{text['compatibility']}</p></div>
 <div class="duck-stage"><div class="duck-card"><img src="{prefix}assets/duck.png" alt="" width="512" height="512" fetchpriority="high"></div><div class="shortcut"><span>{text['example']}</span><div aria-label="Control Option V"><kbd>⌃</kbd> <kbd>⌥</kbd> <kbd>V</kbd></div></div><p class="example-text">{text['exampleCaption']}</p></div></section>
-<section class="section"><div class="intro"><h2>{text['howTitle']}</h2><p>{text['howBody']}</p></div><ol class="flow">{flow}</ol><div class="features">{features}</div></section>
+<section class="section"><div class="intro"><h2>{text['originTitle']}</h2><p>{escape(text['origin'])}</p></div></section>\n<section class="section"><div class="intro"><h2>{text['howTitle']}</h2><p>{text['howBody']}</p></div><ol class="flow">{flow}</ol><div class="features">{features}</div></section>
 <section class="section screenshots"><h2>{text['screenshotsTitle']}</h2><p class="intro">{text['screenshotsNote']}</p><div class="screenshot-grid">{screenshots}</div></section>
 <section class="section install"><div><h2>{text['installTitle']}</h2><p>{text['compatibility']}</p></div><div><ol>{install}</ol><p class="install-note">{text['installNote']}</p></div></section>
 <section class="section" id="downloads"><h2>{text['downloadsTitle']}</h2><p class="intro">{text['changes']}</p><div class="releases">{releases}</div></section>
@@ -60,7 +60,13 @@ for language, text in config["languages"].items():
 
 **{text['tagline']}**
 
+{text['pain']}
+
 {text['description']}
+
+## {text['originTitle']}
+
+{text['origin']}
 
 [{text['homeLink']}]({homepage}{paths[language]}) · [{text['allReleases']}]({repo}/releases)
 
@@ -139,3 +145,4 @@ zsh scripts/package.sh
 (ROOT / 'docs/style.css').write_text((ROOT / 'website/style.css').read_text())
 (ROOT / 'docs/.nojekyll').touch()
 print('Generated three introduction pages and three READMEs')
+
