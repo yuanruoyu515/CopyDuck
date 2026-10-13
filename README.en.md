@@ -26,6 +26,28 @@ Apple Silicon · macOS 14 or later · Tested on macOS 27.0.1
 - **Optional launch at login**：Enable it when you want CopyDuck ready after login.
 - **Text stays on your Mac**：Reads the clipboard only when triggered. No history, no network connection.
 
+## A little duck, in real use.
+
+Screenshots show the Simplified Chinese interface. ⌥D is a custom shortcut; the default is ⌃⌥V.
+
+### Settings window
+
+<img src="docs/assets/settings.png" alt="Settings window" width="560">
+
+Choose a shortcut and launch at login. The input component is ready.
+
+### System input sources
+
+<img src="docs/assets/input-sources.png" alt="System input sources" width="560">
+
+CopyDuck appears in the list of installed system input sources.
+
+### Menu bar menu
+
+<img src="docs/assets/menu-bar.png" alt="Menu bar menu" width="360">
+
+Insert text, open Settings or quit from the menu bar.
+
 ## Install and use
 
 1. Download the DMG and drag “复制鸭” into Applications.

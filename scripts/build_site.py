@@ -21,6 +21,7 @@ for language, text in config["languages"].items():
     features = "".join(f'<article><h3>{escape(title)}</h3><p>{escape(body)}</p></article>' for title, body in text["features"])
     install = "".join(f'<li>{escape(item)}</li>' for item in text["installSteps"])
     faq = "".join(f'<details><summary>{escape(question)}</summary><p>{escape(answer)}</p></details>' for question, answer in text["faq"])
+    screenshots = "".join(f'''<figure class="screenshot"><a href="{prefix}assets/{shot['file']}"><img src="{prefix}assets/{shot['file']}" alt="{escape(title, quote=True)}" width="{shot['width']}" height="{shot['height']}" loading="lazy"></a><figcaption><h3>{escape(title)}</h3><p>{escape(caption)}</p></figcaption></figure>''' for shot, title, caption in zip(config['screenshots'], text['screenshotTitles'], text['screenshotCaptions']))
     releases = "".join(f'''<article class="release{' current' if version == '1.1' else ''}">
       <header><h3>{version}</h3><span class="badge">{text['recommended'] if version == '1.1' else text['legacy']}</span></header>
       <a class="button{' primary' if version == '1.1' else ''}" href="{download(version, 'dmg')}">DMG <span aria-hidden="true">↓</span></a>
@@ -37,6 +38,7 @@ for language, text in config["languages"].items():
 <main id="main" class="wrap"><section class="hero"><div><p class="eyebrow">{text['eyebrow']}</p><h1>{text['heroTitle'][0]}<br>{text['heroTitle'][1]}</h1><p class="lead">{text['description']}</p><div class="actions"><a class="button primary" href="{download('1.1', 'dmg')}">{text['download']} <span aria-hidden="true">↓</span></a><a class="button" href="{repo}">{text['source']} <span aria-hidden="true">↗</span></a></div><p class="compatibility">{text['compatibility']}</p></div>
 <div class="duck-stage"><div class="duck-card"><img src="{prefix}assets/duck.png" alt="" width="512" height="512" fetchpriority="high"></div><div class="shortcut"><span>{text['example']}</span><div aria-label="Control Option V"><kbd>⌃</kbd> <kbd>⌥</kbd> <kbd>V</kbd></div></div><p class="example-text">{text['exampleCaption']}</p></div></section>
 <section class="section"><div class="intro"><h2>{text['howTitle']}</h2><p>{text['howBody']}</p></div><ol class="flow">{flow}</ol><div class="features">{features}</div></section>
+<section class="section screenshots"><h2>{text['screenshotsTitle']}</h2><p class="intro">{text['screenshotsNote']}</p><div class="screenshot-grid">{screenshots}</div></section>
 <section class="section install"><div><h2>{text['installTitle']}</h2><p>{text['compatibility']}</p></div><div><ol>{install}</ol><p class="install-note">{text['installNote']}</p></div></section>
 <section class="section" id="downloads"><h2>{text['downloadsTitle']}</h2><p class="intro">{text['changes']}</p><div class="releases">{releases}</div></section>
 <section class="section faq"><h2>{text['faqTitle']}</h2>{faq}</section></main>
@@ -49,6 +51,7 @@ for language, text in config["languages"].items():
     feature_lines = '\n'.join(f'- **{title}**：{body}' for title, body in text['features'])
     install_lines = '\n'.join(f'{index}. {item}' for index, item in enumerate(text['installSteps'], 1))
     rows = '\n'.join(f"| {version} | [DMG]({download(version, 'dmg')}) · [{text['appZip']}]({download(version, 'app.zip')}) | [{text['releaseNotes']}]({repo}/releases/tag/v{version}) |" for version in ['1.1','1.0'])
+    screenshot_markdown = '\n\n'.join(f"### {title}\n\n<img src=\"docs/assets/{shot['file']}\" alt=\"{escape(title, quote=True)}\" width=\"{560 if index < 2 else 360}\">\n\n{caption}" for index, (shot, title, caption) in enumerate(zip(config['screenshots'], text['screenshotTitles'], text['screenshotCaptions'])))
     markdown = f'''<p align="center"><img src="docs/assets/duck.png" alt="{text['name']}" width="128"></p>
 
 # {text['name']} · CopyDuck
@@ -72,6 +75,12 @@ for language, text in config["languages"].items():
 ## {text['readmeFeatures']}
 
 {feature_lines}
+
+## {text['screenshotsTitle']}
+
+{text['screenshotsNote']}
+
+{screenshot_markdown}
 
 ## {text['readmeInstall']}
 

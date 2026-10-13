@@ -107,7 +107,19 @@
         "下载",
         "说明"
       ],
-      "defaultShortcut": "默认快捷键"
+      "defaultShortcut": "默认快捷键",
+      "screenshotsTitle": "真实界面，轻巧直观。",
+      "screenshotsNote": "截图使用简体中文界面；⌥D 为自定义快捷键，默认是 ⌃⌥V。",
+      "screenshotTitles": [
+        "设置窗口",
+        "系统输入法列表",
+        "菜单栏菜单"
+      ],
+      "screenshotCaptions": [
+        "调整快捷键和开机启动；输入组件已就绪。",
+        "复制鸭作为系统输入法出现在已安装列表中。",
+        "从菜单栏输入文字、打开设置或退出应用。"
+      ]
     },
     "zh-Hant": {
       "name": "複製鴨",
@@ -213,7 +225,19 @@
         "下載",
         "說明"
       ],
-      "defaultShortcut": "預設快捷鍵"
+      "defaultShortcut": "預設快捷鍵",
+      "screenshotsTitle": "真實介面，輕巧直觀。",
+      "screenshotsNote": "截圖使用簡體中文介面；⌥D 為自訂快捷鍵，預設為 ⌃⌥V。",
+      "screenshotTitles": [
+        "設定視窗",
+        "系統輸入法列表",
+        "選單列選單"
+      ],
+      "screenshotCaptions": [
+        "調整快捷鍵與登入時啟動；輸入元件已就緒。",
+        "複製鴨以系統輸入法顯示於已安裝列表中。",
+        "從選單列輸入文字、開啟設定或結束應用程式。"
+      ]
     },
     "en": {
       "name": "CopyDuck",
@@ -269,8 +293,8 @@
       "installTitle": "Three steps to get started.",
       "installSteps": [
         "Download the DMG and drag “复制鸭” into Applications.",
-        "Open CopyDuck and click “安装输入组件” (Install input component) on first use.",
-        "Once “输入组件已就绪” (Input component ready) appears, copy text, focus a field and press your shortcut."
+        "Open CopyDuck and click \"Install input component\" on first use.",
+        "Once \"Input component ready\" appears, copy text, focus a field and press your shortcut."
       ],
       "installNote": "Version 1.1 starts an installed component automatically. Opening a newer build also updates the component while preserving your shortcut.",
       "downloadsTitle": "Both versions, kept for you.",
@@ -319,7 +343,36 @@
         "Download",
         "Notes"
       ],
-      "defaultShortcut": "Default shortcut"
+      "defaultShortcut": "Default shortcut",
+      "screenshotsTitle": "A little duck, in real use.",
+      "screenshotsNote": "Screenshots show the Simplified Chinese interface. ⌥D is a custom shortcut; the default is ⌃⌥V.",
+      "screenshotTitles": [
+        "Settings window",
+        "System input sources",
+        "Menu bar menu"
+      ],
+      "screenshotCaptions": [
+        "Choose a shortcut and launch at login. The input component is ready.",
+        "CopyDuck appears in the list of installed system input sources.",
+        "Insert text, open Settings or quit from the menu bar."
+      ]
     }
-  }
+  },
+  "screenshots": [
+    {
+      "file": "settings.png",
+      "width": 1244,
+      "height": 1236
+    },
+    {
+      "file": "input-sources.png",
+      "width": 1704,
+      "height": 1474
+    },
+    {
+      "file": "menu-bar.png",
+      "width": 656,
+      "height": 410
+    }
+  ]
 }
