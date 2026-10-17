@@ -21,6 +21,7 @@ final class Probe: NSObject, NSApplicationDelegate, NSTextViewDelegate {
     private var caseIndex = -1
     private var sourceID = ""
     private var preparing = false
+    private var changeID = 0
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
         window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 680, height: 470), styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
@@ -67,8 +68,12 @@ final class Probe: NSObject, NSApplicationDelegate, NSTextViewDelegate {
     }
     func textDidChange(_ notification: Notification) {
         guard caseIndex >= 0, !preparing else { return }
-        let index = caseIndex; let matched = text.string == expected
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [self] in
+        changeID += 1
+        let index = caseIndex, revision = changeID
+        // Simulated typing emits many edits; inspect only after the last edit settles.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [self] in
+            guard caseIndex == index, changeID == revision else { return }
+            let matched = text.string == expected
             let restored = InputSources.string(InputSources.current(), kTISPropertyInputSourceID) == sourceID
             status.stringValue = matched && restored ? "通过：文字完全一致，原输入法已恢复。" : "未通过：文字一致 \(matched)，输入法恢复 \(restored)"
             let row: [String: Any] = ["case": index + 1, "textMatched": matched, "sourceRestored": restored, "utf16Length": text.string.utf16.count]

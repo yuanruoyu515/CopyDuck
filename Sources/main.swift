@@ -62,13 +62,42 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         let shortcut = NSMenuItem(title: "输入最新文字  " + model.shortcut.display, action: nil, keyEquivalent: "")
         menu.addItem(shortcut)
         menu.addItem(.separator())
+        for mode in InputMode.allCases {
+            let item = NSMenuItem(title: mode.title, action: #selector(selectMode(_:)), keyEquivalent: "")
+            item.target = self; item.representedObject = mode.rawValue
+            item.state = model.inputMode == mode ? .on : .off
+            menu.addItem(item)
+        }
+        let speed = NSMenuItem(title: "模拟输入速度 · " + model.typingSpeed.title, action: nil, keyEquivalent: "")
+        let speeds = NSMenu()
+        for value in TypingSpeed.allCases {
+            let item = NSMenuItem(title: value.title + "（" + value.detail + "）", action: #selector(selectSpeed(_:)), keyEquivalent: "")
+            item.target = self; item.representedObject = value.rawValue
+            item.state = model.typingSpeed == value ? .on : .off
+            speeds.addItem(item)
+        }
+        speed.submenu = speeds; menu.addItem(speed)
+        if model.isInserting {
+            let stop = NSMenuItem(title: "停止输入", action: #selector(stopInsertion), keyEquivalent: "")
+            stop.target = self; menu.addItem(stop)
+        }
+        menu.addItem(.separator())
         let settings = NSMenuItem(title: "设置…", action: #selector(showSettings), keyEquivalent: ","); settings.target = self; menu.addItem(settings)
         let quit = NSMenuItem(title: "退出复制鸭", action: #selector(quit), keyEquivalent: "q"); quit.target = self; menu.addItem(quit)
     }
+    @objc private func selectMode(_ sender: NSMenuItem) {
+        guard let raw = sender.representedObject as? String, let value = InputMode(rawValue: raw) else { return }
+        model.inputMode = value
+    }
+    @objc private func selectSpeed(_ sender: NSMenuItem) {
+        guard let raw = sender.representedObject as? String, let value = TypingSpeed(rawValue: raw) else { return }
+        model.typingSpeed = value
+    }
+    @objc private func stopInsertion() { Insertion.shared.stop() }
     @objc func showSettings() {
         model.refresh()
         if window == nil {
-            let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 510, height: 474), styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
+            let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 550, height: 710), styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
             window.title = "复制鸭"; window.isReleasedWhenClosed = false
             window.titlebarAppearsTransparent = true; window.backgroundColor = .white
             window.contentView = NSHostingView(rootView: SettingsView(model: model)); window.delegate = self
@@ -80,8 +109,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool { showSettings(); return true }
     func applicationDidBecomeActive(_ notification: Notification) { model.refresh() }
-    @objc private func quit() { Insertion.shared.stop(); NSApp.terminate(nil) }
-    func applicationWillTerminate(_ notification: Notification) { Insertion.shared.stop(); model.stopRecording() }
+    @objc private func quit() { Insertion.shared.shutdown(); NSApp.terminate(nil) }
+    func applicationWillTerminate(_ notification: Notification) { Insertion.shared.shutdown(); model.stopRecording() }
     private func startOrInstallComponent() {
         if InputSources.hasInstalledComponent && !InputSources.componentNeedsUpdate { launchComponent() }
         else { install() }

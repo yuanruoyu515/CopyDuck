@@ -12,6 +12,21 @@ final class SettingsModel: ObservableObject {
     @Published var loginPending = false
     @Published var message = "准备好后，复制文字，再按快捷键。"
     @Published var messageIsError = false
+    @Published var isInserting = false
+    @Published var inputMode: InputMode = InputPreferences.mode(in: .standard) {
+        didSet {
+            guard inputMode != oldValue else { return }
+            Insertion.shared.stop()
+            UserDefaults.standard.set(inputMode.rawValue, forKey: "inputMode")
+            Insertion.shared.mode = inputMode
+        }
+    }
+    @Published var typingSpeed: TypingSpeed = InputPreferences.speed(in: .standard) {
+        didSet {
+            UserDefaults.standard.set(typingSpeed.rawValue, forKey: "typingSpeed")
+            Insertion.shared.speed = typingSpeed
+        }
+    }
     let hotKey = HotKey()
     var installAction: (() -> Void)?
     private var monitor: Any?
@@ -21,6 +36,7 @@ final class SettingsModel: ObservableObject {
         } else { shortcut = .initial }
         hotKey.action = { Insertion.shared.trigger() }
         Insertion.shared.report = { [weak self] text, error in self?.message = text; self?.messageIsError = error; if error { NSSound.beep() } }
+        Insertion.shared.activityChanged = { [weak self] active in self?.isInserting = active }
     }
     func refresh() {
         installed = InputSources.hasInstalledComponent
@@ -77,7 +93,7 @@ struct SettingsView: View {
     private let ink = Color(red: 0.18, green: 0.22, blue: 0.24)
     private let muted = Color(red: 0.48, green: 0.51, blue: 0.53)
     var body: some View {
-        VStack(alignment: .leading, spacing: 22) {
+        VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 16) {
                 Image(nsImage: DuckArtwork.image(size: 100)).frame(width: 88, height: 88)
                     .background(Color.white).clipShape(RoundedRectangle(cornerRadius: 22))
@@ -109,8 +125,28 @@ struct SettingsView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                             .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0.09)))
                     }.buttonStyle(.plain).accessibilityLabel("设置输入快捷键")
-                }.padding(20)
-                Divider().padding(.horizontal, 20)
+                }.padding(16)
+                Divider().padding(.horizontal, 16)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("输入模式").font(.system(size: 14, weight: .medium))
+                    Picker("输入模式", selection: $model.inputMode) {
+                        ForEach(InputMode.allCases, id: \.self) { Text($0.title).tag($0) }
+                    }.pickerStyle(.segmented).labelsHidden().frame(maxWidth: .infinity, alignment: .leading)
+                    Text(model.inputMode == .normal ? "一次写入整段文字" : "逐字输入，再次按快捷键或手动打字可停止")
+                        .font(.system(size: 12)).foregroundStyle(muted)
+                }.padding(16)
+                Divider().padding(.horizontal, 16)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("模拟输入速度").font(.system(size: 14, weight: .medium))
+                        Spacer()
+                        Text(model.typingSpeed.detail).font(.system(size: 12)).foregroundStyle(muted)
+                    }
+                    Picker("模拟输入速度", selection: $model.typingSpeed) {
+                        ForEach(TypingSpeed.allCases, id: \.self) { Text($0.title).tag($0) }
+                    }.pickerStyle(.segmented).labelsHidden().frame(maxWidth: .infinity, alignment: .leading).disabled(model.inputMode != .simulated)
+                }.padding(16)
+                Divider().padding(.horizontal, 16)
                 HStack {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("开机启动").font(.system(size: 14, weight: .medium))
@@ -119,7 +155,7 @@ struct SettingsView: View {
                     Spacer()
                     Toggle("开机启动", isOn: Binding(get: { model.loginEnabled }, set: model.setLogin))
                         .labelsHidden().toggleStyle(.switch).disabled(!InputSources.isComponentProcess)
-                }.padding(20)
+                }.padding(16)
             }.background(Color(red: 0.965, green: 0.967, blue: 0.963)).clipShape(RoundedRectangle(cornerRadius: 16))
             if !model.ready {
                 HStack {
@@ -142,6 +178,6 @@ struct SettingsView: View {
                 Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "").font(.system(size: 11, design: .monospaced)).foregroundStyle(muted)
             }
         }
-        .padding(28).frame(width: 510, height: 474).background(Color.white).foregroundStyle(ink).preferredColorScheme(.light)
+        .padding(28).frame(width: 550, height: 710).background(Color.white).foregroundStyle(ink).preferredColorScheme(.light)
     }
 }

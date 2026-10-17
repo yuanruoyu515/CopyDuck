@@ -7,7 +7,7 @@ SDK=$(xcrun --show-sdk-path)
 FLAGS=()
 if [[ "${1:-}" == "--debug" ]]; then FLAGS=(-D DEBUG); fi
 swiftc "${FLAGS[@]}" -module-cache-path "$PWD/build/module-cache" -swift-version 5 -O -target arm64-apple-macos14.0 -sdk "$SDK" \
-    Sources/main.swift Sources/DuckArtwork.swift Sources/InputSources.swift Sources/HotKey.swift Sources/Insertion.swift Sources/Settings.swift \
+    Sources/main.swift Sources/DuckArtwork.swift Sources/InputSources.swift Sources/HotKey.swift Sources/Typing.swift Sources/Insertion.swift Sources/Settings.swift \
     -framework AppKit -framework Carbon -framework InputMethodKit -framework SwiftUI -framework ServiceManagement \
     -o "$APP/Contents/MacOS/CopyDuck"
 swiftc -module-cache-path "$PWD/build/module-cache" -swift-version 5 -O Sources/DuckArtwork.swift Sources/IconMaker.swift -o build/IconMaker

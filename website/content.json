@@ -1,7 +1,7 @@
 {
   "repository": "https://github.com/yuanruoyu515/CopyDuck",
   "homepage": "https://yuanruoyu515.github.io/CopyDuck/",
-  "version": "1.1",
+  "version": "1.2",
   "languages": {
     "zh-Hans": {
       "name": "复制鸭",
@@ -9,7 +9,7 @@
       "description": "🐤 复制鸭（CopyDuck）是一款轻量的 macOS 菜单栏工具：按下快捷键，就能通过系统输入法，将剪贴板中的纯文字直接输入当前输入框。它适用于部分禁用粘贴、拦截粘贴快捷键，但仍支持系统输入法的网页和应用，减少重复录入长段文字的麻烦。支持中文、英文、换行和表情，文字处理全程在本机完成，不上传内容，也不保存剪贴板历史。",
       "skip": "跳到主要内容",
       "language": "选择语言",
-      "download": "下载 1.1",
+      "download": "下载 1.2",
       "source": "查看源码",
       "compatibility": "Apple Silicon · macOS 14 及以上 · 已在 macOS 27.0.1 实测",
       "eyebrow": "给 Mac 的小鸭子",
@@ -21,7 +21,7 @@
       "exampleText": "你好，复制鸭 🦆",
       "exampleCaption": "复制文字 → 点击输入位置 → 按下快捷键",
       "howTitle": "像输入法一样，把文字写进去。",
-      "howBody": "复制鸭可以添加到“简体中文”输入法列表。触发快捷键时，它读取剪贴板、临时切换输入源、提交文字，再恢复你原来的输入法。",
+      "howBody": "复制鸭可以添加到“简体中文”输入法列表。触发快捷键时，它读取最新剪贴板、临时切换输入源，按所选模式一次写入整段或逐字输入，再恢复你原来的输入法。输入途中复制其他文字不会改变本次内容。",
       "steps": [
         [
           "复制",
@@ -52,6 +52,10 @@
         [
           "文字留在本机",
           "按快捷键时才读取剪贴板，不保存历史，不连接网络。"
+        ],
+        [
+          "模拟输入",
+          "在设置或菜单栏切换普通模式／模拟输入。中速、快速、特别快约为每秒 5、10、20 字，标点和换行稍作停顿。模式和速度会记住；速度调整从下次输入生效。再次按快捷键、手动打字或切换输入位置可停止，已输入的文字会保留。"
         ]
       ],
       "installTitle": "第一次安装，三步就好。",
@@ -60,13 +64,13 @@
         "打开复制鸭，首次点击“安装输入组件”。",
         "看到“输入组件已就绪”后，复制文字，再到输入框按快捷键。"
       ],
-      "installNote": "1.1 会自动启动已安装的组件。打开新版时，也会自动更新组件并保留快捷键。",
-      "downloadsTitle": "两个版本，都留着。",
+      "installNote": "打开新版会自动更新并启动输入组件，保留原快捷键和开机启动设置。",
+      "downloadsTitle": "新版与历史版本。",
       "recommended": "推荐",
-      "legacy": "初始版本",
+      "legacy": "历史版本",
       "releaseNotes": "发布说明",
       "appZip": "App 压缩包",
-      "changes": "1.1 修复重复安装才能工作的问题，并调整菜单栏和输入法菜单里的鸭子图标；1.0 保留最初的功能版本。",
+      "changes": "1.2 增加普通模式／模拟输入切换和三档打字速度，可在设置或菜单栏调整。1.1 修复组件自动启动并调整鸭子图标；1.0 保留最初的功能版本。",
       "faqTitle": "使用前，你可能想知道。",
       "faq": [
         [
@@ -98,9 +102,9 @@
       "allReleases": "所有版本",
       "buildBody": "安装 Apple Command Line Tools 和 Python 3 后，在项目目录运行：",
       "buildOutput": "生成 build/复制鸭.app。正式构建不会包含测试触发入口。项目使用系统框架，无第三方运行依赖。",
-      "testBody": "检查菜单图标在普通和 Retina 尺寸下是否居中：",
+      "testBody": "验证模拟输入的文字、速度与停止逻辑，并检查普通和 Retina 尺寸下的图标居中：",
       "packBody": "生成 App 压缩包和带拖拽布局的 DMG：",
-      "guideBody": "Git 历史保留 v1.0 与 v1.1 标签；后续修改直接在 main 分支维护。发布流程见",
+      "guideBody": "Git 历史保留 v1.0、v1.1 与 v1.2 标签；后续修改在 main 分支维护。发布流程见",
       "developerGuide": "开发说明",
       "tableLabels": [
         "版本",
@@ -109,16 +113,16 @@
       ],
       "defaultShortcut": "默认快捷键",
       "screenshotsTitle": "真实界面，轻巧直观。",
-      "screenshotsNote": "截图使用简体中文界面；⌥D 为自定义快捷键，默认是 ⌃⌥V。",
+      "screenshotsNote": "设置窗口和菜单栏截图由维护者试用 1.2-beta.1 时提供，展示 1.2 新增功能。界面为简体中文；⌥D 是自定义快捷键，默认是 ⌃⌥V。",
       "screenshotTitles": [
         "设置窗口",
         "系统输入法列表",
         "菜单栏菜单"
       ],
       "screenshotCaptions": [
-        "调整快捷键和开机启动；输入组件已就绪。",
+        "在设置中切换输入模式，选择中速、快速或特别快，并调整快捷键和开机启动。",
         "复制鸭作为系统输入法出现在已安装列表中。",
-        "从菜单栏输入文字、打开设置或退出应用。"
+        "点开菜单栏小鸭子，即可切换普通模式／模拟输入，并在子菜单选择三档速度。"
       ],
       "pain": "💢 输入框不让粘贴，或者会区分粘贴与正常输入，让你只能重新手打一遍？",
       "originTitle": "💦 灵感来源",
@@ -130,7 +134,7 @@
       "description": "🐤 複製鴨（CopyDuck）是一款輕量的 macOS 選單列工具：按下快捷鍵，就能透過系統輸入法，將剪貼簿中的純文字直接輸入目前的輸入框。它適用於部分停用貼上、攔截貼上快捷鍵，但仍支援系統輸入法的網頁和應用程式，減少重複輸入長段文字的麻煩。支援中文、英文、換行和表情，文字處理全程在本機完成，不上傳內容，也不儲存剪貼簿歷史。",
       "skip": "跳至主要內容",
       "language": "選擇語言",
-      "download": "下載 1.1",
+      "download": "下載 1.2",
       "source": "檢視原始碼",
       "compatibility": "Apple Silicon · macOS 14 以上 · 已在 macOS 27.0.1 實測",
       "eyebrow": "給 Mac 的小鴨子",
@@ -142,7 +146,7 @@
       "exampleText": "你好，複製鴨 🦆",
       "exampleCaption": "複製文字 → 點選輸入位置 → 按下快捷鍵",
       "howTitle": "像輸入法一樣，把文字寫進去。",
-      "howBody": "複製鴨可以加入「簡體中文」輸入法列表。觸發快捷鍵時，它讀取剪貼簿、暫時切換輸入來源、提交文字，再恢復原本的輸入法。",
+      "howBody": "複製鴨可以加入「簡體中文」輸入法列表。觸發快捷鍵時，它讀取最新剪貼簿、暫時切換輸入來源，依選取的模式一次寫入整段或逐字輸入，再恢復原本的輸入法。輸入途中複製其他文字不會改變本次內容。",
       "steps": [
         [
           "複製",
@@ -173,6 +177,10 @@
         [
           "文字留在本機",
           "按快捷鍵時才讀取剪貼簿，不儲存歷史，不連接網路。"
+        ],
+        [
+          "模擬輸入",
+          "在設定或選單列切換一般模式／模擬輸入。中速、快速、特別快約為每秒 5、10、20 字，標點與換行稍作停頓。會記住模式和速度；速度調整從下次輸入生效。再次按快捷鍵、手動打字或切換輸入位置即可停止，已輸入的文字會保留。"
         ]
       ],
       "installTitle": "第一次安裝，三步就好。",
@@ -181,13 +189,13 @@
         "開啟複製鴨，首次點選「安装输入组件」。",
         "看到「输入组件已就绪」後，複製文字，再到輸入框按快捷鍵。"
       ],
-      "installNote": "1.1 會自動啟動已安裝的元件。開啟新版時，也會自動更新元件並保留快捷鍵。",
-      "downloadsTitle": "兩個版本，都留著。",
+      "installNote": "開啟新版會自動更新並啟動輸入元件，保留原快捷鍵與登入時啟動設定。",
+      "downloadsTitle": "新版與歷史版本。",
       "recommended": "推薦",
-      "legacy": "初始版本",
+      "legacy": "歷史版本",
       "releaseNotes": "版本說明",
       "appZip": "App 壓縮檔",
-      "changes": "1.1 修復每次需重新安裝才會運作的問題，並調整選單列與輸入法選單中的鴨子圖示；1.0 保留最初的功能版本。",
+      "changes": "1.2 新增一般模式／模擬輸入切換與三段打字速度，可在設定或選單列調整。1.1 修復元件自動啟動並調整鴨子圖示；1.0 保留最初的功能版本。",
       "faqTitle": "使用前，你可能想知道。",
       "faq": [
         [
@@ -219,9 +227,9 @@
       "allReleases": "所有版本",
       "buildBody": "安裝 Apple Command Line Tools 與 Python 3 後，在專案目錄執行：",
       "buildOutput": "產生 build/复制鸭.app。正式建置不包含測試觸發入口。專案使用系統框架，沒有第三方執行相依套件。",
-      "testBody": "檢查選單圖示在一般與 Retina 尺寸下是否置中：",
+      "testBody": "驗證模擬輸入的文字、速度與停止邏輯，並檢查一般與 Retina 尺寸下的圖示置中：",
       "packBody": "產生 App 壓縮檔與可拖曳安裝的 DMG：",
-      "guideBody": "Git 歷史保留 v1.0 與 v1.1 標籤；後續修改直接在 main 分支維護。發佈流程請見",
+      "guideBody": "Git 歷史保留 v1.0、v1.1 與 v1.2 標籤；後續修改在 main 分支維護。發佈流程請見",
       "developerGuide": "開發說明",
       "tableLabels": [
         "版本",
@@ -230,16 +238,16 @@
       ],
       "defaultShortcut": "預設快捷鍵",
       "screenshotsTitle": "真實介面，輕巧直觀。",
-      "screenshotsNote": "截圖使用簡體中文介面；⌥D 為自訂快捷鍵，預設為 ⌃⌥V。",
+      "screenshotsNote": "設定視窗與選單列截圖由維護者試用 1.2-beta.1 時提供，展示 1.2 新增功能。介面為簡體中文；⌥D 是自訂快捷鍵，預設為 ⌃⌥V。",
       "screenshotTitles": [
         "設定視窗",
         "系統輸入法列表",
         "選單列選單"
       ],
       "screenshotCaptions": [
-        "調整快捷鍵與登入時啟動；輸入元件已就緒。",
+        "在設定中切換輸入模式，選擇中速、快速或特別快，並調整快捷鍵與登入時啟動。",
         "複製鴨以系統輸入法顯示於已安裝列表中。",
-        "從選單列輸入文字、開啟設定或結束應用程式。"
+        "點開選單列小鴨子，即可切換一般模式／模擬輸入，並在子選單選擇三段速度。"
       ],
       "pain": "💢 輸入框不讓貼上，或是會區分貼上與一般輸入，讓你只能重新手打一遍？",
       "originTitle": "💦 靈感來源",
@@ -251,7 +259,7 @@
       "description": "🐤 CopyDuck is a lightweight macOS menu bar utility. Press a shortcut to insert plain text from your clipboard into the active input field through the system input method. It helps with some websites and apps that disable pasting or intercept paste shortcuts while still supporting system input methods, saving you from retyping long passages. It supports Chinese, English, line breaks and emoji. All text processing happens locally on your Mac, with no uploads or clipboard history.",
       "skip": "Skip to content",
       "language": "Choose language",
-      "download": "Download 1.1",
+      "download": "Download 1.2",
       "source": "View source",
       "compatibility": "Apple Silicon · macOS 14 or later · Tested on macOS 27.0.1",
       "eyebrow": "A little duck for your Mac",
@@ -263,7 +271,7 @@
       "exampleText": "Hello, CopyDuck 🦆",
       "exampleCaption": "Copy text → Click an input field → Press your shortcut",
       "howTitle": "Give your clipboard an input method.",
-      "howBody": "CopyDuck appears under Simplified Chinese input sources. When you press the shortcut, it reads the clipboard, temporarily selects its input source, commits the text, then restores your previous input method.",
+      "howBody": "CopyDuck appears under Simplified Chinese input sources. When you press the shortcut, it reads the latest clipboard text, temporarily selects its input source, inserts the whole text at once or types it character by character, then restores your previous input method. Copying something else while typing does not change the current request.",
       "steps": [
         [
           "Copy",
@@ -294,6 +302,10 @@
         [
           "Text stays on your Mac",
           "Reads the clipboard only when triggered. No history, no network connection."
+        ],
+        [
+          "Simulated typing",
+          "Switch between Normal and Simulated Typing in Settings or the menu bar. Medium, Fast and Very Fast average about 5, 10 and 20 characters per second, with pauses at punctuation and line breaks. Mode and speed are remembered; speed changes apply to the next request. Press the shortcut again, type manually or change input focus to stop. Text already entered is kept."
         ]
       ],
       "installTitle": "Three steps to get started.",
@@ -302,13 +314,13 @@
         "Open CopyDuck and click \"Install input component\" on first use.",
         "Once \"Input component ready\" appears, copy text, focus a field and press your shortcut."
       ],
-      "installNote": "Version 1.1 starts an installed component automatically. Opening a newer build also updates the component while preserving your shortcut.",
-      "downloadsTitle": "Both versions, kept for you.",
+      "installNote": "Opening a newer build automatically updates and starts the input component, preserving your shortcut and launch-at-login setting.",
+      "downloadsTitle": "Latest and previous versions.",
       "recommended": "Recommended",
-      "legacy": "Original release",
+      "legacy": "Previous release",
       "releaseNotes": "Release notes",
       "appZip": "App ZIP",
-      "changes": "1.1 fixes the repeated-install startup issue and centers the duck icons in the menu bar and input source menu. 1.0 preserves the original feature release.",
+      "changes": "1.2 adds Normal / Simulated Typing mode switching and three typing speeds, available in Settings and the menu bar. 1.1 fixes component startup and centers the duck icons; 1.0 preserves the original feature release.",
       "faqTitle": "A few things to know.",
       "faq": [
         [
@@ -340,9 +352,9 @@
       "allReleases": "All releases",
       "buildBody": "Install Apple Command Line Tools and Python 3, then run from the project directory:",
       "buildOutput": "Produces build/复制鸭.app. Release builds exclude the test trigger. The app uses system frameworks and has no third-party runtime dependencies.",
-      "testBody": "Check icon alignment at standard and Retina resolutions:",
+      "testBody": "Test simulated typing, speed and cancellation, and check icon alignment at standard and Retina resolutions:",
       "packBody": "Generate an App ZIP and a drag-to-install DMG:",
-      "guideBody": "Git history preserves the v1.0 and v1.1 tags. Maintain future changes on main. See the release workflow in",
+      "guideBody": "Git history preserves the v1.0, v1.1 and v1.2 tags. Maintain future changes on main. See the release workflow in",
       "developerGuide": "the development guide",
       "tableLabels": [
         "Version",
@@ -351,16 +363,16 @@
       ],
       "defaultShortcut": "Default shortcut",
       "screenshotsTitle": "A little duck, in real use.",
-      "screenshotsNote": "Screenshots show the Simplified Chinese interface. ⌥D is a custom shortcut; the default is ⌃⌥V.",
+      "screenshotsNote": "The Settings and menu bar screenshots were supplied by the maintainer while testing 1.2-beta.1 and show the new 1.2 features. The interface is in Simplified Chinese; ⌥D is a custom shortcut, while the default is ⌃⌥V.",
       "screenshotTitles": [
         "Settings window",
         "System input sources",
         "Menu bar menu"
       ],
       "screenshotCaptions": [
-        "Choose a shortcut and launch at login. The input component is ready.",
+        "Switch input modes and choose Medium, Fast or Very Fast in Settings, alongside shortcut and launch-at-login options.",
         "CopyDuck appears in the list of installed system input sources.",
-        "Insert text, open Settings or quit from the menu bar."
+        "Open the duck menu to switch Normal / Simulated Typing and choose one of three speeds in the submenu."
       ],
       "pain": "💢 An input field blocks pasting or distinguishes pasted text from regular input, leaving you to type everything again?",
       "originTitle": "💦 The inspiration",
@@ -370,8 +382,8 @@
   "screenshots": [
     {
       "file": "settings.png",
-      "width": 1244,
-      "height": 1236
+      "width": 1324,
+      "height": 1708
     },
     {
       "file": "input-sources.png",
@@ -380,9 +392,13 @@
     },
     {
       "file": "menu-bar.png",
-      "width": 656,
-      "height": 410
+      "width": 948,
+      "height": 528
     }
+  ],
+  "releases": [
+    "1.2",
+    "1.1",
+    "1.0"
   ]
 }
-

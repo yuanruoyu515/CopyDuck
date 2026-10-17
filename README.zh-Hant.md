@@ -22,6 +22,7 @@ Apple Silicon · macOS 14 以上 · 已在 macOS 27.0.1 實測
 
 | 版本 | 下載 | 說明 |
 | --- | --- | --- |
+| 1.2 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.dmg) · [App 壓縮檔](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.app.zip) | [版本說明](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2) |
 | 1.1 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.1/CopyDuck-1.1-arm64.dmg) · [App 壓縮檔](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.1/CopyDuck-1.1-arm64.app.zip) | [版本說明](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.1) |
 | 1.0 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.0/CopyDuck-1.0-arm64.dmg) · [App 壓縮檔](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.0/CopyDuck-1.0-arm64.app.zip) | [版本說明](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.0) |
 
@@ -31,16 +32,17 @@ Apple Silicon · macOS 14 以上 · 已在 macOS 27.0.1 實測
 - **待在選單列**：不占 Dock；關閉設定視窗，仍在背景等你。
 - **登入時啟動可選**：需要時開啟，登入 Mac 後自動執行。
 - **文字留在本機**：按快捷鍵時才讀取剪貼簿，不儲存歷史，不連接網路。
+- **模擬輸入**：在設定或選單列切換一般模式／模擬輸入。中速、快速、特別快約為每秒 5、10、20 字，標點與換行稍作停頓。會記住模式和速度；速度調整從下次輸入生效。再次按快捷鍵、手動打字或切換輸入位置即可停止，已輸入的文字會保留。
 
 ## 真實介面，輕巧直觀。
 
-截圖使用簡體中文介面；⌥D 為自訂快捷鍵，預設為 ⌃⌥V。
+設定視窗與選單列截圖由維護者試用 1.2-beta.1 時提供，展示 1.2 新增功能。介面為簡體中文；⌥D 是自訂快捷鍵，預設為 ⌃⌥V。
 
 ### 設定視窗
 
 <img src="docs/assets/settings.png" alt="設定視窗" width="560">
 
-調整快捷鍵與登入時啟動；輸入元件已就緒。
+在設定中切換輸入模式，選擇中速、快速或特別快，並調整快捷鍵與登入時啟動。
 
 ### 系統輸入法列表
 
@@ -52,7 +54,7 @@ Apple Silicon · macOS 14 以上 · 已在 macOS 27.0.1 實測
 
 <img src="docs/assets/menu-bar.png" alt="選單列選單" width="360">
 
-從選單列輸入文字、開啟設定或結束應用程式。
+點開選單列小鴨子，即可切換一般模式／模擬輸入，並在子選單選擇三段速度。
 
 ## 安裝與使用
 
@@ -60,13 +62,13 @@ Apple Silicon · macOS 14 以上 · 已在 macOS 27.0.1 實測
 2. 開啟複製鴨，首次點選「安装输入组件」。
 3. 看到「输入组件已就绪」後，複製文字，再到輸入框按快捷鍵。
 
-1.1 會自動啟動已安裝的元件。開啟新版時，也會自動更新元件並保留快捷鍵。
+開啟新版會自動更新並啟動輸入元件，保留原快捷鍵與登入時啟動設定。
 
 預設快捷鍵: **⌃⌥V** (Control + Option + V).
 
 ## 運作原理
 
-複製鴨可以加入「簡體中文」輸入法列表。觸發快捷鍵時，它讀取剪貼簿、暫時切換輸入來源、提交文字，再恢復原本的輸入法。
+複製鴨可以加入「簡體中文」輸入法列表。觸發快捷鍵時，它讀取最新剪貼簿、暫時切換輸入來源，依選取的模式一次寫入整段或逐字輸入，再恢復原本的輸入法。輸入途中複製其他文字不會改變本次內容。
 
 `NSPasteboard → TISSelectInputSource → IMKTextInput.insertText → restore previous input source`
 
@@ -82,9 +84,9 @@ Apple Silicon · macOS 14 以上 · 已在 macOS 27.0.1 實測
 
 ## 版本紀錄
 
-1.1 修復每次需重新安裝才會運作的問題，並調整選單列與輸入法選單中的鴨子圖示；1.0 保留最初的功能版本。
+1.2 新增一般模式／模擬輸入切換與三段打字速度，可在設定或選單列調整。1.1 修復元件自動啟動並調整鴨子圖示；1.0 保留最初的功能版本。
 
-Git 歷史保留 v1.0 與 v1.1 標籤；後續修改直接在 main 分支維護。發佈流程請見 [開發說明](DEVELOPMENT.md).
+Git 歷史保留 v1.0、v1.1 與 v1.2 標籤；後續修改在 main 分支維護。發佈流程請見 [開發說明](DEVELOPMENT.md).
 
 ## 從原始碼建置
 
@@ -96,9 +98,10 @@ zsh build.sh
 
 產生 build/复制鸭.app。正式建置不包含測試觸發入口。專案使用系統框架，沒有第三方執行相依套件。
 
-檢查選單圖示在一般與 Retina 尺寸下是否置中：
+驗證模擬輸入的文字、速度與停止邏輯，並檢查一般與 Retina 尺寸下的圖示置中：
 
 ```sh
+zsh scripts/test_typing.sh
 zsh scripts/test_icons.sh
 ```
 

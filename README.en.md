@@ -22,6 +22,7 @@ Apple Silicon · macOS 14 or later · Tested on macOS 27.0.1
 
 | Version | Download | Notes |
 | --- | --- | --- |
+| 1.2 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2) |
 | 1.1 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.1/CopyDuck-1.1-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.1/CopyDuck-1.1-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.1) |
 | 1.0 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.0/CopyDuck-1.0-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.0/CopyDuck-1.0-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.0) |
 
@@ -31,16 +32,17 @@ Apple Silicon · macOS 14 or later · Tested on macOS 27.0.1
 - **A home in the menu bar**：No Dock icon. Closing Settings keeps the duck running.
 - **Optional launch at login**：Enable it when you want CopyDuck ready after login.
 - **Text stays on your Mac**：Reads the clipboard only when triggered. No history, no network connection.
+- **Simulated typing**：Switch between Normal and Simulated Typing in Settings or the menu bar. Medium, Fast and Very Fast average about 5, 10 and 20 characters per second, with pauses at punctuation and line breaks. Mode and speed are remembered; speed changes apply to the next request. Press the shortcut again, type manually or change input focus to stop. Text already entered is kept.
 
 ## A little duck, in real use.
 
-Screenshots show the Simplified Chinese interface. ⌥D is a custom shortcut; the default is ⌃⌥V.
+The Settings and menu bar screenshots were supplied by the maintainer while testing 1.2-beta.1 and show the new 1.2 features. The interface is in Simplified Chinese; ⌥D is a custom shortcut, while the default is ⌃⌥V.
 
 ### Settings window
 
 <img src="docs/assets/settings.png" alt="Settings window" width="560">
 
-Choose a shortcut and launch at login. The input component is ready.
+Switch input modes and choose Medium, Fast or Very Fast in Settings, alongside shortcut and launch-at-login options.
 
 ### System input sources
 
@@ -52,7 +54,7 @@ CopyDuck appears in the list of installed system input sources.
 
 <img src="docs/assets/menu-bar.png" alt="Menu bar menu" width="360">
 
-Insert text, open Settings or quit from the menu bar.
+Open the duck menu to switch Normal / Simulated Typing and choose one of three speeds in the submenu.
 
 ## Install and use
 
@@ -60,13 +62,13 @@ Insert text, open Settings or quit from the menu bar.
 2. Open CopyDuck and click "Install input component" on first use.
 3. Once "Input component ready" appears, copy text, focus a field and press your shortcut.
 
-Version 1.1 starts an installed component automatically. Opening a newer build also updates the component while preserving your shortcut.
+Opening a newer build automatically updates and starts the input component, preserving your shortcut and launch-at-login setting.
 
 Default shortcut: **⌃⌥V** (Control + Option + V).
 
 ## How it works
 
-CopyDuck appears under Simplified Chinese input sources. When you press the shortcut, it reads the clipboard, temporarily selects its input source, commits the text, then restores your previous input method.
+CopyDuck appears under Simplified Chinese input sources. When you press the shortcut, it reads the latest clipboard text, temporarily selects its input source, inserts the whole text at once or types it character by character, then restores your previous input method. Copying something else while typing does not change the current request.
 
 `NSPasteboard → TISSelectInputSource → IMKTextInput.insertText → restore previous input source`
 
@@ -82,9 +84,9 @@ Choose “退出复制鸭” (Quit CopyDuck) in its menu. Before uninstalling, d
 
 ## Version history
 
-1.1 fixes the repeated-install startup issue and centers the duck icons in the menu bar and input source menu. 1.0 preserves the original feature release.
+1.2 adds Normal / Simulated Typing mode switching and three typing speeds, available in Settings and the menu bar. 1.1 fixes component startup and centers the duck icons; 1.0 preserves the original feature release.
 
-Git history preserves the v1.0 and v1.1 tags. Maintain future changes on main. See the release workflow in [the development guide](DEVELOPMENT.md).
+Git history preserves the v1.0, v1.1 and v1.2 tags. Maintain future changes on main. See the release workflow in [the development guide](DEVELOPMENT.md).
 
 ## Build from source
 
@@ -96,9 +98,10 @@ zsh build.sh
 
 Produces build/复制鸭.app. Release builds exclude the test trigger. The app uses system frameworks and has no third-party runtime dependencies.
 
-Check icon alignment at standard and Retina resolutions:
+Test simulated typing, speed and cancellation, and check icon alignment at standard and Retina resolutions:
 
 ```sh
+zsh scripts/test_typing.sh
 zsh scripts/test_icons.sh
 ```
 
