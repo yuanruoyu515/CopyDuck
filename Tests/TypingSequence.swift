@@ -1,12 +1,17 @@
 import Foundation
 
 private final class Clock {
-    var jobs: [(TimeInterval, () -> Void)] = []
+    struct Job { let id: UUID; let delay: TimeInterval; let action: () -> Void }
+    var jobs: [Job] = []
     var elapsed: TimeInterval = 0
-    func schedule(_ delay: TimeInterval, _ action: @escaping () -> Void) { jobs.append((delay, action)) }
+    func schedule(_ delay: TimeInterval, _ action: @escaping () -> Void) -> MainScheduler.Cancel {
+        let id = UUID()
+        jobs.append(Job(id: id, delay: delay, action: action))
+        return { [weak self] in self?.jobs.removeAll { $0.id == id } }
+    }
     func advance() {
         precondition(!jobs.isEmpty)
-        let job = jobs.removeFirst(); elapsed += job.0; job.1()
+        let job = jobs.removeFirst(); elapsed += job.delay; job.action()
     }
     func drain() { while !jobs.isEmpty { advance() } }
     func sequence() -> TypingSequence { TypingSequence(schedule: schedule, variation: { 0.5 }) }
@@ -81,6 +86,116 @@ private final class Clock {
             precondition(count == long.count && completions == 2)
         }
 
+        // Delayed source/client readiness must connect once in either input mode.
+        for mode in InputMode.allCases {
+            let clock = Clock(), sequence = clock.sequence()
+            let waiter = InputConnectionWaiter(schedule: clock.schedule, now: { clock.elapsed })
+            var output = "", ready = false, connections = 0
+            waiter.start(timeout: 3, ready: { ready && clock.elapsed >= 0.12 }, connected: {
+                connections += 1
+                if mode == .normal { output += "首次输入🦆" }
+                else { sequence.start(text: "首次输入🦆", speed: .fast, write: { output += $0; return true }, completion: { precondition($0) }) }
+            }, expired: { preconditionFailure("Ready client timed out") })
+            precondition(output.isEmpty)
+            clock.advance(); clock.advance(); ready = true
+            clock.drain()
+            precondition(output == "首次输入🦆" && connections == 1)
+        }
+
+        // An unsubmitted character can wait briefly; submitted characters never replay.
+        do {
+            let clock = Clock(), sequence = clock.sequence()
+            var attempts = 0, output = "", completed: [Bool] = []
+            sequence.start(text: "甲乙🦆", speed: .fast, attempt: { chunk in
+                attempts += 1
+                if (2...5).contains(attempts) { precondition(chunk == "乙"); return .retry }
+                output += chunk; return .inserted
+            }, completion: { completed.append($0) })
+            clock.drain()
+            precondition(output == "甲乙🦆" && completed == [true] && attempts == 7)
+            attempts = 0
+            sequence.start(text: "不应写入", speed: .fast, attempt: { _ in attempts += 1; return .retry }, completion: { precondition(!$0) })
+            clock.drain(); precondition(attempts == 26 && clock.jobs.isEmpty)
+        }
+
+        // Cancelled/racing callbacks cannot expire or deliver a later request.
+        do {
+            let clock = Clock()
+            let waiter = InputConnectionWaiter(schedule: clock.schedule, now: { clock.elapsed })
+            var completed = 0, expired = 0
+            waiter.start(timeout: 0.1, ready: { false }, connected: { completed += 1 }, expired: { expired += 1 })
+            let stale = clock.jobs[0].action
+            waiter.stop(); precondition(clock.jobs.isEmpty)
+            waiter.start(timeout: 0.1, ready: { false }, connected: { completed += 1 }, expired: { expired += 1 })
+            stale(); precondition(clock.jobs.count == 1)
+            clock.drain(); precondition(completed == 0 && expired == 1)
+        }
+
+        // Stop, completion and owner destruction release session captures and timers.
+        final class Payload { let text = String(repeating: "长文本🦆", count: 100_000) }
+        for finish in [false, true] {
+            let clock = Clock(), sequence = clock.sequence()
+            weak var released: Payload?
+            do {
+                let payload = Payload(); released = payload
+                sequence.start(text: finish ? "字" : payload.text, speed: .fast,
+                               write: { [payload] _ in _ = payload.text; return true }, completion: { _ in })
+            }
+            if !finish { precondition(released != nil); sequence.stop() }
+            precondition(released == nil && clock.jobs.isEmpty)
+        }
+        do {
+            let clock = Clock()
+            var sequence: TypingSequence? = clock.sequence()
+            sequence?.start(text: "旧文本", speed: .fast, write: { _ in true }, completion: { _ in })
+            let stale = clock.jobs[0].action
+            sequence = nil; precondition(clock.jobs.isEmpty); stale()
+        }
+        do {
+            let clock = Clock(), sequence = clock.sequence()
+            let waiter = InputConnectionWaiter(schedule: clock.schedule, now: { clock.elapsed })
+            // 1,000 starts/cancels: no accumulated timers or captured payloads.
+            let long = String(repeating: "长文本🦆", count: 100_000)
+            for _ in 0..<1_000 {
+                sequence.start(text: long, speed: .medium, write: { _ in true }, completion: { _ in })
+                precondition(clock.jobs.count == 1)
+                sequence.stop(); precondition(clock.jobs.isEmpty)
+                waiter.start(timeout: 3, ready: { false }, connected: {}, expired: {})
+                precondition(clock.jobs.count == 1)
+                waiter.stop(); precondition(clock.jobs.isEmpty)
+            }
+            weak var released: Payload?
+            do {
+                let payload = Payload(); released = payload
+                waiter.start(timeout: 3, ready: { [payload] in _ = payload.text; return false }, connected: {}, expired: {})
+            }
+            precondition(released != nil)
+            waiter.stop(); precondition(released == nil)
+        }
+
+        // The real dispatch scheduler also drops captures immediately on cancellation,
+        // even though Dispatch can keep the cancelled work item until its deadline.
+        do {
+            weak var released: Payload?
+            var cancel: MainScheduler.Cancel?
+            do {
+                let payload = Payload(); released = payload
+                cancel = MainScheduler.schedule(0.03) { [payload] in
+                    _ = payload.text; preconditionFailure("Cancelled dispatch callback ran")
+                }
+            }
+            precondition(released != nil)
+            cancel?(); precondition(released == nil)
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.06))
+        }
+        do {
+            let clock = Clock()
+            let waiter = InputConnectionWaiter(schedule: clock.schedule, now: { clock.elapsed })
+            waiter.start(timeout: 3, ready: { waiter.stop(); return true },
+                         connected: { preconditionFailure("Cancelled readiness delivered") }, expired: {})
+            precondition(clock.jobs.isEmpty)
+        }
+
         // Speed ratios, jitter limits, and longer punctuation/newline pauses.
         for speed in TypingSpeed.allCases {
             let base = 1.0 / Double(speed.charactersPerSecond)
@@ -106,6 +221,6 @@ private final class Clock {
         defaults.set("invalid", forKey: "inputMode"); defaults.set("invalid", forKey: "typingSpeed")
         precondition(InputPreferences.mode(in: defaults) == .normal)
         precondition(InputPreferences.speed(in: defaults) == .medium)
-        print("PASS: Unicode, selection replacement, cancellation/retry, focus loss, reentrant stop, empty/long text, three speeds and preferences")
+        print("PASS: Unicode, selection, delayed connection in both modes, bounded reconnect, cancellation races, 1,000 long-text cancellations, capture/timer release, speeds and preferences")
     }
 }

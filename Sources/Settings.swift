@@ -34,7 +34,10 @@ final class SettingsModel: ObservableObject {
         if let data = UserDefaults.standard.data(forKey: "shortcut"), let value = try? JSONDecoder().decode(Shortcut.self, from: data) {
             shortcut = value
         } else { shortcut = .initial }
-        hotKey.action = { Insertion.shared.trigger() }
+        hotKey.action = { [weak self] in
+            guard let self else { return }
+            Insertion.shared.trigger(shortcut: self.shortcut)
+        }
         Insertion.shared.report = { [weak self] text, error in self?.message = text; self?.messageIsError = error; if error { NSSound.beep() } }
         Insertion.shared.activityChanged = { [weak self] active in self?.isInserting = active }
     }
@@ -70,6 +73,7 @@ final class SettingsModel: ObservableObject {
         if let monitor { NSEvent.removeMonitor(monitor) }
         monitor = nil; recording = false
     }
+    deinit { if let monitor { NSEvent.removeMonitor(monitor) } }
     func setLogin(_ value: Bool) {
         do {
             if value { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
@@ -95,7 +99,7 @@ struct SettingsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 16) {
-                Image(nsImage: DuckArtwork.image(size: 100)).frame(width: 88, height: 88)
+                Image(nsImage: DuckArtwork.settingsIcon).frame(width: 88, height: 88)
                     .background(Color.white).clipShape(RoundedRectangle(cornerRadius: 22))
                     .overlay(RoundedRectangle(cornerRadius: 22).stroke(Color.black.opacity(0.05)))
                 VStack(alignment: .leading, spacing: 7) {

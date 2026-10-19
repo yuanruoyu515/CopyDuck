@@ -43,35 +43,96 @@ struct InputPreferences {
 }
 
 // All calls run on the main thread. The injected scheduler allows deterministic tests.
+enum MainScheduler {
+    typealias Cancel = () -> Void
+    typealias Schedule = (TimeInterval, @escaping () -> Void) -> Cancel
+    private final class Payload {
+        var action: (() -> Void)?
+        init(_ action: @escaping () -> Void) { self.action = action }
+    }
+    static func schedule(_ delay: TimeInterval, _ action: @escaping () -> Void) -> Cancel {
+        let payload = Payload(action)
+        let item = DispatchWorkItem {
+            let action = payload.action; payload.action = nil
+            action?()
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: item)
+        // Dispatch may keep a cancelled work item until its deadline. Drop captured
+        // resources now, rather than keeping them alive with that queued item.
+        return { payload.action = nil; item.cancel() }
+    }
+}
+
+// Wait outside IMK activation callbacks for both the input source and client to settle.
+final class InputConnectionWaiter {
+    private let schedule: MainScheduler.Schedule
+    private let now: () -> TimeInterval
+    private var cancelScheduled: MainScheduler.Cancel?
+    private var generation: UUID?
+
+    init(schedule: @escaping MainScheduler.Schedule = MainScheduler.schedule,
+         now: @escaping () -> TimeInterval = { ProcessInfo.processInfo.systemUptime }) {
+        self.schedule = schedule; self.now = now
+    }
+    func start(timeout: TimeInterval, ready: @escaping () -> Bool,
+               connected: @escaping () -> Void, expired: @escaping () -> Void) {
+        stop()
+        let id = UUID(); generation = id
+        poll(id: id, deadline: now() + timeout, ready: ready, connected: connected, expired: expired)
+    }
+    private func poll(id: UUID, deadline: TimeInterval, ready: @escaping () -> Bool,
+                      connected: @escaping () -> Void, expired: @escaping () -> Void) {
+        guard generation == id else { return }
+        let isReady = ready()
+        guard generation == id else { return }
+        if isReady { stop(); connected(); return }
+        if now() >= deadline { stop(); expired(); return }
+        cancelScheduled = schedule(0.03) { [weak self] in
+            guard let self, self.generation == id else { return }
+            self.cancelScheduled = nil
+            self.poll(id: id, deadline: deadline, ready: ready, connected: connected, expired: expired)
+        }
+    }
+    func stop() { generation = nil; cancelScheduled?(); cancelScheduled = nil }
+    deinit { cancelScheduled?() }
+}
+
 final class TypingSequence {
-    typealias Schedule = (TimeInterval, @escaping () -> Void) -> Void
+    enum Attempt { case inserted, retry, stopped }
     private struct Session {
         let id = UUID()
         let text: String
         var index: String.Index
         let speed: TypingSpeed
-        let write: (String) -> Bool
+        let write: (String) -> Attempt
         let completion: (Bool) -> Void
+        var retries = 0
     }
     private var session: Session?
-    private let schedule: Schedule
+    private let schedule: MainScheduler.Schedule
     private let variation: () -> Double
+    private var cancelScheduled: MainScheduler.Cancel?
 
-    init(schedule: @escaping Schedule = { delay, action in
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: action)
-    }, variation: @escaping () -> Double = { Double.random(in: 0...1) }) {
+    init(schedule: @escaping MainScheduler.Schedule = MainScheduler.schedule,
+         variation: @escaping () -> Double = { Double.random(in: 0...1) }) {
         self.schedule = schedule
         self.variation = variation
     }
 
     func start(text: String, speed: TypingSpeed, write: @escaping (String) -> Bool,
                completion: @escaping (Bool) -> Void) {
-        let next = Session(text: text, index: text.startIndex, speed: speed, write: write, completion: completion)
+        start(text: text, speed: speed, attempt: { write($0) ? .inserted : .stopped }, completion: completion)
+    }
+    func start(text: String, speed: TypingSpeed, attempt: @escaping (String) -> Attempt,
+               completion: @escaping (Bool) -> Void) {
+        stop()
+        let next = Session(text: text, index: text.startIndex, speed: speed, write: attempt, completion: completion)
         session = next
         step(id: next.id)
     }
 
-    func stop() { session = nil }
+    func stop() { session = nil; cancelScheduled?(); cancelScheduled = nil }
+    deinit { cancelScheduled?() }
 
     private func step(id: UUID) {
         guard var current = session, current.id == id else { return }
@@ -79,15 +140,31 @@ final class TypingSequence {
             session = nil; current.completion(true); return
         }
         let character = current.text[current.index]
-        let accepted = current.write(String(character))
+        let result = current.write(String(character))
         // Writing may synchronously deactivate the client or cancel this session.
         guard session?.id == id else { return }
-        guard accepted else { session = nil; current.completion(false); return }
+        switch result {
+        case .stopped: stop(); current.completion(false); return
+        case .retry:
+            current.retries += 1
+            guard current.retries <= 25 else { stop(); current.completion(false); return }
+            session = current
+            enqueue(id: id, delay: 0.03)
+            return
+        case .inserted: current.retries = 0
+        }
         current.index = current.text.index(after: current.index)
         if current.index == current.text.endIndex {
             session = nil; current.completion(true); return
         }
         session = current
-        schedule(current.speed.delay(after: character, variation: variation())) { [weak self] in self?.step(id: id) }
+        enqueue(id: id, delay: current.speed.delay(after: character, variation: variation()))
+    }
+    private func enqueue(id: UUID, delay: TimeInterval) {
+        cancelScheduled = schedule(delay) { [weak self] in
+            guard let self, self.session?.id == id else { return }
+            self.cancelScheduled = nil
+            self.step(id: id)
+        }
     }
 }

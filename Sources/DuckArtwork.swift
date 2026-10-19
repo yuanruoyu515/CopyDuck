@@ -1,6 +1,8 @@
 import AppKit
 
 enum DuckArtwork {
+    // One small shared image instead of redrawing it on every status update.
+    static let settingsIcon = image(size: 100)
     static func image(size: CGFloat, background: Bool = false, template: Bool = false) -> NSImage {
         let image = NSImage(size: NSSize(width: size, height: size))
         image.lockFocus()

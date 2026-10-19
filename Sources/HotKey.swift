@@ -13,18 +13,24 @@ struct Shortcut: Codable, Equatable {
         (modifiers & UInt32(shiftKey) != 0 ? "⇧" : "") +
         (modifiers & UInt32(cmdKey) != 0 ? "⌘" : "") + key
     }
+    func matches(keyCode: UInt16, flags: NSEvent.ModifierFlags) -> Bool {
+        UInt32(keyCode) == self.keyCode && Self.carbonModifiers(flags) == modifiers
+    }
+    private static func carbonModifiers(_ flags: NSEvent.ModifierFlags) -> UInt32 {
+        var carbon: UInt32 = 0
+        if flags.contains(.command) { carbon |= UInt32(cmdKey) }
+        if flags.contains(.control) { carbon |= UInt32(controlKey) }
+        if flags.contains(.option) { carbon |= UInt32(optionKey) }
+        if flags.contains(.shift) { carbon |= UInt32(shiftKey) }
+        return carbon
+    }
     static func from(_ event: NSEvent) -> Shortcut? {
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         guard !flags.intersection([.command, .control, .option]).isEmpty,
               ![36, 48, 49, 51, 53, 55, 56, 57, 58, 59, 60, 61, 62, 63, 71, 76, 117, 123, 124, 125, 126].contains(Int(event.keyCode)),
               let key = event.charactersIgnoringModifiers?.uppercased(), !key.isEmpty else { return nil }
         if flags == .command && ["C", "V", "X", "A", "Q", "W", "H", "M", "Z"].contains(key) { return nil }
-        var carbon: UInt32 = 0
-        if flags.contains(.command) { carbon |= UInt32(cmdKey) }
-        if flags.contains(.control) { carbon |= UInt32(controlKey) }
-        if flags.contains(.option) { carbon |= UInt32(optionKey) }
-        if flags.contains(.shift) { carbon |= UInt32(shiftKey) }
-        return Shortcut(keyCode: UInt32(event.keyCode), modifiers: carbon, key: key)
+        return Shortcut(keyCode: UInt32(event.keyCode), modifiers: carbonModifiers(flags), key: key)
     }
 }
 
