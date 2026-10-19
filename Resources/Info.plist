@@ -9,8 +9,8 @@
     <key>CFBundleDisplayName</key><string>复制鸭</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleSignature</key><string>DUCK</string>
-    <key>CFBundleVersion</key><string>6</string>
-    <key>CFBundleShortVersionString</key><string>1.2.1-beta.1</string>
+    <key>CFBundleVersion</key><string>7</string>
+    <key>CFBundleShortVersionString</key><string>1.2.1</string>
     <key>CFBundleIconFile</key><string>CopyDuck.icns</string>
     <key>NSPrincipalClass</key><string>NSApplication</string>
     <key>LSMinimumSystemVersion</key><string>14.0</string>

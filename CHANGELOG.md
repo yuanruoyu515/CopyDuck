@@ -1,27 +1,27 @@
 # 版本记录 / 版本紀錄 / Changelog
 
-## 1.2.1-beta.1 — 本地试用 / 本機試用 / Local trial
+## 1.2.1 — 2026-10-19
 
 **简体中文**
 
 - 普通模式和模拟输入均改为等待输入源、输入连接稳定后再提交，避免在输入法激活回调中立即写入。
 - 区分全局快捷键的转发事件与手动输入，防止触发动作误停本次请求。模拟输入遇到短暂的组件停用时，只允许原控制器及原客户端在有限时间内重连，已提交字符不重发。
 - 取消任务时立即释放回调捕获对象，取消待执行任务；关闭设置窗口释放界面，共用一份小图标。文字按字素遍历，不预先拆成字符数组。
-- 构建编号 6；自动回归测试与构建检查通过。Word 桌面测试连接超时，首次触发与只输入一字的实际修复效果待试用确认。此版本尚未发布到 GitHub。
+- 构建编号 7；维护者已试用本地测试版并确认无明显问题。自动回归覆盖 1,000 次长文本启动/取消及资源释放；通过构建与图标检查。
 
 **繁體中文**
 
 - 一般模式與模擬輸入皆改為等待輸入來源、輸入連線穩定後再提交，避免在輸入法啟用回呼中立即寫入。
 - 區分全域快捷鍵的轉送事件與手動輸入，防止觸發動作誤停本次請求。模擬輸入遇到短暫的元件停用時，只允許原控制器及原用戶端在有限時間內重新連線，已提交字元不重送。
 - 取消任務時立即釋放回呼捕獲物件，取消待執行任務；關閉設定視窗釋放介面，共用一份小圖示。文字依字素走訪，不預先拆成字元陣列。
-- 組建編號 6；自動回歸測試與建置檢查通過。Word 桌面測試連線逾時，首次觸發與只輸入一字的實際修復效果待試用確認。此版本尚未發佈到 GitHub。
+- 組建編號 7；維護者已試用本機測試版並確認無明顯問題。自動回歸涵蓋 1,000 次長文本啟動/取消與資源釋放；通過建置與圖示檢查。
 
 **English**
 
 - Both modes wait for the input source and client to settle instead of inserting inside IMK activation callbacks.
 - Distinguish forwarded shortcut events from manual input so the trigger does not cancel its own request. Simulated typing permits a bounded reconnection of the original controller and client after transient deactivation; submitted characters are never replayed.
 - Cancellation drops callback captures immediately and cancels pending work. Closing Settings releases its view; reuse one small icon. Iterate text by grapheme without creating a character array.
-- Build 6; automated regression and build checks pass. The Word desktop test connection timed out, so the reported first-trigger and single-character failures still need trial confirmation. This version has not been published to GitHub.
+- Build 7; the maintainer tested the local trial and reported no apparent issues. Automated regression covers 1,000 long-text starts/cancellations and resource release; build and icon checks pass.
 
 ## 1.2 — 2026-10-16
 

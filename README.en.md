@@ -22,6 +22,7 @@ Apple Silicon · macOS 14 or later · Tested on macOS 27.0.1
 
 | Version | Download | Notes |
 | --- | --- | --- |
+| 1.2.1 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.1/CopyDuck-1.2.1-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.1/CopyDuck-1.2.1-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2.1) |
 | 1.2 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2) |
 | 1.1 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.1/CopyDuck-1.1-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.1/CopyDuck-1.1-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.1) |
 | 1.0 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.0/CopyDuck-1.0-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.0/CopyDuck-1.0-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.0) |
@@ -33,6 +34,7 @@ Apple Silicon · macOS 14 or later · Tested on macOS 27.0.1
 - **Optional launch at login**：Enable it when you want CopyDuck ready after login.
 - **Text stays on your Mac**：Reads the clipboard only when triggered. No history, no network connection.
 - **Simulated typing**：Switch between Normal and Simulated Typing in Settings or the menu bar. Medium, Fast and Very Fast average about 5, 10 and 20 characters per second, with pauses at punctuation and line breaks. Mode and speed are remembered; speed changes apply to the next request. Press the shortcut again, type manually or change input focus to stop. Text already entered is kept.
+- **Input reliability and resource cleanup**：Improve first-trigger behavior in Word and prevent unintended typing cancellation. Release the Settings view on close; clear text references, callbacks and scheduled tasks when input finishes or is cancelled.
 
 ## A little duck, in real use.
 
@@ -84,9 +86,9 @@ Choose “退出复制鸭” (Quit CopyDuck) in its menu. Before uninstalling, d
 
 ## Version history
 
-1.2 adds Normal / Simulated Typing mode switching and three typing speeds, available in Settings and the menu bar. 1.1 fixes component startup and centers the duck icons; 1.0 preserves the original feature release.
+1.2.1 improves first-trigger behavior in Word, prevents unintended input cancellation, and strengthens resource cleanup when cancelling input or closing Settings. 1.2 adds Normal / Simulated Typing and three speeds; 1.1 fixes component startup and centers the icons; 1.0 preserves the original feature release.
 
-Git history preserves the v1.0, v1.1 and v1.2 tags. Maintain future changes on main. See the release workflow in [the development guide](DEVELOPMENT.md).
+Git history preserves the v1.0, v1.1, v1.2 and v1.2.1 tags. Maintain future changes on main. See the release workflow in [the development guide](DEVELOPMENT.md).
 
 ## Build from source
 
