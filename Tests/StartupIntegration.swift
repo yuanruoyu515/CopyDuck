@@ -20,6 +20,37 @@ import Carbon
             } while Date() < deadline
             return false
         }
+        if command == "burst" {
+            precondition(CommandLine.arguments.count > 2, "Usage: StartupIntegration burst /path/to/复制鸭.app")
+            let launcher = URL(fileURLWithPath: CommandLine.arguments[2])
+            precondition(Bundle(url: launcher)?.bundleIdentifier == "com.copyduck.app", "Use the split-identity launcher")
+            let center = DistributedNotificationCenter.default()
+            let request = UUID().uuidString
+            var acknowledged = false
+            let observer = center.addObserver(forName: Notification.Name(id + ".SettingsShown"), object: request, queue: .main) { _ in acknowledged = true }
+            defer { center.removeObserver(observer) }
+            var completions = 0
+            var failures: [String] = []
+            for _ in 0..<12 {
+                let config = NSWorkspace.OpenConfiguration()
+                config.createsNewApplicationInstance = true
+                NSWorkspace.shared.openApplication(at: launcher, configuration: config) { _, error in
+                    DispatchQueue.main.async {
+                        completions += 1
+                        if let error { failures.append(error.localizedDescription) }
+                    }
+                }
+            }
+            precondition(wait { completions == 12 }, "Open requests timed out")
+            precondition(failures.isEmpty, "Launch Services errors: \(failures)")
+            precondition(wait {
+                center.postNotificationName(Notification.Name(id + ".ShowSettings"), object: nil, userInfo: ["request": request], deliverImmediately: true)
+                return acknowledged && running().count == 1 &&
+                    NSRunningApplication.runningApplications(withBundleIdentifier: "com.copyduck.app").isEmpty
+            }, "Expected one component, no lingering launcher, and a settings-window acknowledgement")
+            print("Burst passed: 12 opens, one component, no launcher left behind, settings acknowledged")
+            return
+        }
         if command == "quit" {
             for app in running() { precondition(app.terminate(), "Could not quit component") }
             precondition(wait { running().isEmpty }, "Component did not quit")

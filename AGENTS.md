@@ -3,7 +3,7 @@
 This is the primary Git checkout for 复制鸭 / 複製鴨 / CopyDuck.
 
 - Maintain Swift source in `Sources/` and metadata in `Resources/`.
-- Keep the existing bundle ID and preferences domain so upgrades preserve shortcuts and login settings.
+- Keep the input component ID and shared preferences domain `com.copyduck.inputmethod.CopyDuck`; the launcher uses `com.copyduck.app`. Never give both bundles the same ID. Preserve existing shortcuts and login settings.
 - Text insertion must use the InputMethodKit client, not simulated paste or direct accessibility writes.
 - Remain a menu bar app without a Dock icon. Closing Settings must keep the background component running.
 - Distinguish an installed component from a running component; reopen the installed component automatically.
