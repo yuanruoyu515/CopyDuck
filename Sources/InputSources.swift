@@ -4,12 +4,21 @@ import CoreServices
 
 enum InputSources {
     static let bundleID = "com.copyduck.inputmethod.CopyDuck"
+    static let launcherBundleID = "com.copyduck.app"
     static let connection = bundleID + "_Connection"
+    // Keep the original domain when the launcher gains its own bundle identity.
+    static let preferences = UserDefaults(suiteName: bundleID) ?? .standard
+    static var bundledComponentURL: URL {
+        Bundle.main.bundleURL.appendingPathComponent("Contents/Library/Input Methods/复制鸭.app")
+    }
     static var installedURL: URL {
         FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Input Methods/复制鸭.app")
     }
     // Installation on disk and execution as the IMK component are different states.
-    static var isComponentProcess: Bool { Bundle.main.bundleURL.standardizedFileURL == installedURL.standardizedFileURL }
+    static var isComponentProcess: Bool {
+        // Distinct bundle identities also work when macOS translocates the app.
+        Bundle.main.bundleIdentifier == bundleID
+    }
     static var installedBundle: Bundle? {
         guard let bundle = Bundle(url: installedURL), bundle.bundleIdentifier == bundleID,
               let executable = bundle.executableURL, FileManager.default.isExecutableFile(atPath: executable.path) else { return nil }
@@ -24,8 +33,7 @@ enum InputSources {
     }
     static var runningComponents: [NSRunningApplication] {
         NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).filter {
-            $0.processIdentifier != ProcessInfo.processInfo.processIdentifier &&
-            $0.bundleURL?.standardizedFileURL == installedURL.standardizedFileURL
+            $0.processIdentifier != ProcessInfo.processInfo.processIdentifier
         }
     }
     static func string(_ source: TISInputSource, _ key: CFString) -> String? {

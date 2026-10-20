@@ -53,7 +53,7 @@ zsh scripts/test_typing.sh
 
 ## 更新版本
 
-1. 修改 `CFBundleShortVersionString`，并递增 `CFBundleVersion`。输入组件根据构建编号判断是否自动更新。
+1. 同步修改 `Resources/Info.plist` 和 `Resources/InputMethodInfo.plist` 的 `CFBundleShortVersionString`，并递增 `CFBundleVersion`。两个 bundle 的版本必须一致；输入组件根据构建编号判断是否自动更新。
 2. 更新 `website/content.json` 中的版本、下载信息与三语发布说明；同时更新 `releases` 版本列表；生成器统一读取该列表与当前版本。
 3. 运行 `python3 scripts/build_site.py`，同步三语 README 与介绍页面。
 4. 构建、检查图标，然后生成安装包。App 只在用户主动按快捷键时读取剪贴板。
@@ -90,6 +90,27 @@ gh release create "v<version>" .release/<version>/CopyDuck-* .release/<version>/
 介绍页由 GitHub Pages 发布 `main` 分支下的 `/docs`。更新并推送该目录后，页面会自动重新部署。
 
 ## 手动验证启动
+
+### 1.2.2-beta.1 启动修复（build 8）
+
+参考使用者提供并确认可用的 `复制鸭-source-build7.zip`，将启动器与输入法组件拆分：外层为 `com.copyduck.app`，内嵌及安装后的输入组件仍为 `com.copyduck.inputmethod.CopyDuck`。外层不再带输入法服务器注册信息；安装时只复制内嵌组件。两者共用原来的偏好域，保留快捷键、模式和速度。角色由 bundle ID 判断，不依赖可能被 App Translocation 改变的运行路径。构建时先签署组件，再签署外层应用。
+
+启动器及组件分别持有单实例锁；不能创建锁时显示错误并退出，不继续创建无锁实例。启动器等到组件确认已打开设置窗口后才退出；通知每 0.25 秒重试，最多等候 10 秒，超时显示可重试的错误界面。使用者参考包只用于提取启动与打包修法；1.2.1 的 Word 输入调度、取消与资源清理代码继续保留。
+
+```sh
+zsh scripts/test_startup.sh
+```
+
+自动测试检查双 bundle 身份及版本一致、24 个并发组件争抢同一锁、启动器去重、两种角色独立运行、退出后重新获取锁，以及锁创建失败。该脚本也编译下面的桌面集成测试。构建及自动测试不能替代故障机器的实际启动验证；此修复先提供 beta，不替换既有正式 Release。
+
+在真实 Mac 桌面会话中打开新版并完成组件升级后执行：
+
+```sh
+build/StartupIntegration burst /Applications/复制鸭.app
+build/StartupIntegration check 8
+```
+
+`burst` 连续发出 12 次启动请求，要求最终只保留一个组件、没有遗留启动器，并收到设置窗口确认。另需手动检查全新安装、从旧版升级、退出后重开、关闭或最小化设置后重开，以及快捷键、模式、速度和开机启动设置是否保留。无需安装的源码检查不代表这些桌面场景已通过。
 
 ```sh
 swiftc -parse-as-library -module-cache-path build/module-cache \

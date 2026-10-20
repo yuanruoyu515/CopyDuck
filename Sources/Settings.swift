@@ -13,17 +13,17 @@ final class SettingsModel: ObservableObject {
     @Published var message = "准备好后，复制文字，再按快捷键。"
     @Published var messageIsError = false
     @Published var isInserting = false
-    @Published var inputMode: InputMode = InputPreferences.mode(in: .standard) {
+    @Published var inputMode: InputMode = InputPreferences.mode(in: InputSources.preferences) {
         didSet {
             guard inputMode != oldValue else { return }
             Insertion.shared.stop()
-            UserDefaults.standard.set(inputMode.rawValue, forKey: "inputMode")
+            InputSources.preferences.set(inputMode.rawValue, forKey: "inputMode")
             Insertion.shared.mode = inputMode
         }
     }
-    @Published var typingSpeed: TypingSpeed = InputPreferences.speed(in: .standard) {
+    @Published var typingSpeed: TypingSpeed = InputPreferences.speed(in: InputSources.preferences) {
         didSet {
-            UserDefaults.standard.set(typingSpeed.rawValue, forKey: "typingSpeed")
+            InputSources.preferences.set(typingSpeed.rawValue, forKey: "typingSpeed")
             Insertion.shared.speed = typingSpeed
         }
     }
@@ -31,7 +31,7 @@ final class SettingsModel: ObservableObject {
     var installAction: (() -> Void)?
     private var monitor: Any?
     init() {
-        if let data = UserDefaults.standard.data(forKey: "shortcut"), let value = try? JSONDecoder().decode(Shortcut.self, from: data) {
+        if let data = InputSources.preferences.data(forKey: "shortcut"), let value = try? JSONDecoder().decode(Shortcut.self, from: data) {
             shortcut = value
         } else { shortcut = .initial }
         hotKey.action = { [weak self] in
@@ -64,7 +64,7 @@ final class SettingsModel: ObservableObject {
                 self.message = "这个快捷键已被占用，换一个试试。"; self.messageIsError = true; return nil
             }
             self.shortcut = shortcut
-            UserDefaults.standard.set(try? JSONEncoder().encode(shortcut), forKey: "shortcut")
+            InputSources.preferences.set(try? JSONEncoder().encode(shortcut), forKey: "shortcut")
             self.message = "快捷键已设为 \(shortcut.display)。"; self.messageIsError = false
             self.stopRecording(); return nil
         }

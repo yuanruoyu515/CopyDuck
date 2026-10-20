@@ -13,9 +13,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     private let model = SettingsModel()
     private let logger = Logger(subsystem: InputSources.bundleID, category: "Startup")
     private var installing = false
+    private var launching = false
+    private var launchRequest: String?
+    private var launchDeadline = Date.distantPast
+    private var launchTimer: Timer?
+    private var startupObservers: [NSObjectProtocol] = []
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
+        let center = DistributedNotificationCenter.default()
+        let requestName = InputSources.bundleID + (InputSources.isComponentProcess ? ".ShowSettings" : ".ShowLauncherSettings")
+        startupObservers.append(center.addObserver(forName: Notification.Name(requestName), object: nil, queue: .main) { [weak self] note in
+            guard let self else { return }
+            if InputSources.isComponentProcess {
+                self.showSettings()
+                if let request = note.userInfo?["request"] as? String {
+                    center.postNotificationName(Notification.Name(InputSources.bundleID + ".SettingsShown"), object: request, userInfo: nil, deliverImmediately: true)
+                }
+            } else if !self.installing && !self.launching {
+                // A failed startup leaves a visible launcher with a Retry action.
+                // Reopening should reveal it, not spawn yet another launcher.
+                self.showSettings()
+            }
+        })
+        startupObservers.append(center.addObserver(forName: Notification.Name(InputSources.bundleID + ".SettingsShown"), object: nil, queue: .main) { [weak self] note in
+            guard let self, let request = note.object as? String,
+                  request == self.launchRequest else { return }
+            self.finishLaunch()
+            NSApp.terminate(nil)
+        })
         model.installAction = { [weak self] in self?.startOrInstallComponent() }
         if !InputSources.isComponentProcess && InputSources.hasInstalledComponent {
             startOrInstallComponent()
@@ -32,7 +58,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         statusItem.button?.toolTip = "复制鸭 · " + model.shortcut.display
         let menu = NSMenu(); menu.delegate = self; statusItem.menu = menu
         if InputSources.isComponentProcess {
-            DistributedNotificationCenter.default().addObserver(forName: Notification.Name(InputSources.bundleID + ".ShowSettings"), object: nil, queue: .main) { [weak self] _ in self?.showSettings() }
             server = IMKServer(name: InputSources.connection, bundleIdentifier: InputSources.bundleID)
             _ = InputSources.register(); _ = InputSources.enable()
             model.startShortcut()
@@ -50,9 +75,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
             }
         }
         model.refresh()
-        if !UserDefaults.standard.bool(forKey: "hasOpened") || !model.ready || CommandLine.arguments.contains("--settings") {
+        if !InputSources.preferences.bool(forKey: "hasOpened") || !model.ready || CommandLine.arguments.contains("--settings") {
             showSettings()
-            UserDefaults.standard.set(true, forKey: "hasOpened")
+            InputSources.preferences.set(true, forKey: "hasOpened")
         }
     }
     func menuWillOpen(_ menu: NSMenu) {
@@ -103,6 +128,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
             window.contentView = NSHostingView(rootView: SettingsView(model: model)); window.delegate = self
             window.center(); self.window = window
         }
+        window?.deminiaturize(nil)
         window?.makeKeyAndOrderFront(nil); NSApp.activate(ignoringOtherApps: true)
     }
     func windowWillClose(_ notification: Notification) {
@@ -112,33 +138,64 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         window = nil
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
-    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool { showSettings(); return true }
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if launching { requestComponentSettings() }
+        else if !installing { showSettings() }
+        return true
+    }
     func applicationDidBecomeActive(_ notification: Notification) { model.refresh() }
     @objc private func quit() { Insertion.shared.shutdown(); NSApp.terminate(nil) }
-    func applicationWillTerminate(_ notification: Notification) { Insertion.shared.shutdown(); model.stopRecording() }
+    func applicationWillTerminate(_ notification: Notification) {
+        finishLaunch()
+        for observer in startupObservers { DistributedNotificationCenter.default().removeObserver(observer) }
+        startupObservers.removeAll()
+        Insertion.shared.shutdown(); model.stopRecording()
+    }
     private func startOrInstallComponent() {
+        guard !installing && !launching else { return }
         if InputSources.hasInstalledComponent && !InputSources.componentNeedsUpdate { launchComponent() }
         else { install() }
     }
     private func launchComponent() {
-        if !InputSources.runningComponents.isEmpty {
-            logger.info("Opening settings in the running input component")
-            DistributedNotificationCenter.default().postNotificationName(Notification.Name(InputSources.bundleID + ".ShowSettings"), object: nil, userInfo: nil, deliverImmediately: true)
-            NSApp.terminate(nil)
-            return
+        guard !launching else { return }
+        launching = true
+        launchRequest = UUID().uuidString
+        launchDeadline = Date().addingTimeInterval(10)
+        launchTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            if Date() >= self.launchDeadline {
+                self.finishLaunch()
+                self.showFailure("组件未能确认打开设置。请先从菜单栏退出复制鸭，再重试；若仍无响应，请注销并重新登录。")
+            } else { self.requestComponentSettings() }
         }
+        requestComponentSettings()
         logger.info("Automatically launching the installed input component")
         _ = LSRegisterURL(InputSources.installedURL as CFURL, true)
         let configuration = NSWorkspace.OpenConfiguration()
         configuration.arguments = ["--settings"]
-        // The launcher and input component share a bundle ID, so use the requested path explicitly.
-        configuration.createsNewApplicationInstance = true
+        // The component has its own identity, so Launch Services can reuse it.
+        configuration.createsNewApplicationInstance = false
         NSWorkspace.shared.openApplication(at: InputSources.installedURL, configuration: configuration) { _, error in
             DispatchQueue.main.async {
-                if let error { self.showFailure("启动未完成：\(error.localizedDescription)") }
-                else { NSApp.terminate(nil) }
+                guard self.launching else { return }
+                if let error {
+                    self.finishLaunch()
+                    self.showFailure("启动未完成：\(error.localizedDescription)")
+                } else {
+                    // Launch Services success only means the open was accepted.
+                    // Wait until the component has actually displayed its window.
+                    self.requestComponentSettings()
+                }
             }
         }
+    }
+    private func requestComponentSettings() {
+        guard let request = launchRequest else { return }
+        DistributedNotificationCenter.default().postNotificationName(Notification.Name(InputSources.bundleID + ".ShowSettings"), object: nil, userInfo: ["request": request], deliverImmediately: true)
+    }
+    private func finishLaunch() {
+        launchTimer?.invalidate(); launchTimer = nil
+        launchRequest = nil; launching = false
     }
     private func showFailure(_ message: String) {
         startInterface()
@@ -161,7 +218,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
                 }
             }
             try fm.createDirectory(at: transaction, withIntermediateDirectories: true)
-            try fm.copyItem(at: Bundle.main.bundleURL, to: staged)
+            let bundledComponent = InputSources.bundledComponentURL
+            guard let bundle = Bundle(url: bundledComponent), bundle.bundleIdentifier == InputSources.bundleID else {
+                throw NSError(domain: "CopyDuck", code: 3, userInfo: [NSLocalizedDescriptionKey: "安装包中缺少有效的输入组件，请重新下载或构建。"])
+            }
+            try fm.copyItem(at: bundledComponent, to: staged)
             let running = InputSources.runningComponents
             for application in running {
                 guard application.terminate() else {
@@ -227,22 +288,32 @@ if CommandLine.arguments.contains("--diagnostics") {
     ]
     if let data = try? JSONSerialization.data(withJSONObject: value, options: [.prettyPrinted, .sortedKeys]), let text = String(data: data, encoding: .utf8) { print(text) }
 } else {
-    // InputMethodKit may launch the component again while a menu-bar instance is running.
-    // Keep one owner of the input server and the global shortcut.
-    var instanceLock: Int32 = -1
-    if InputSources.isComponentProcess {
+    // Both roles need a lock: Finder may launch multiple application copies while
+    // the first launcher is still installing or waiting for its component.
+    let instanceLock: InstanceLock
+    do {
         let directory = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/复制鸭")
-        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        instanceLock = open(directory.appendingPathComponent("instance.lock").path, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)
-        if instanceLock >= 0 && flock(instanceLock, LOCK_EX | LOCK_NB) != 0 {
-            if CommandLine.arguments.contains("--settings") {
-                DistributedNotificationCenter.default().postNotificationName(Notification.Name(InputSources.bundleID + ".ShowSettings"), object: nil, userInfo: nil, deliverImmediately: true)
+        let component = InputSources.isComponentProcess
+        guard let acquired = try InstanceLock.acquire(at: directory.appendingPathComponent(component ? "instance.lock" : "launcher.lock")) else {
+            if !component || CommandLine.arguments.contains("--settings") {
+                let name = InputSources.bundleID + (component ? ".ShowSettings" : ".ShowLauncherSettings")
+                DistributedNotificationCenter.default().postNotificationName(Notification.Name(name), object: nil, userInfo: nil, deliverImmediately: true)
             }
             exit(0)
         }
+        instanceLock = acquired
+    } catch {
+        // Continuing without a lock can create multiple IMK servers and shortcuts.
+        let application = NSApplication.shared
+        application.setActivationPolicy(.accessory)
+        let alert = NSAlert()
+        alert.messageText = "复制鸭无法启动"
+        alert.informativeText = "无法创建启动锁：\(error.localizedDescription)"
+        application.activate(ignoringOtherApps: true)
+        alert.runModal()
+        exit(1)
     }
     let application = NSApplication.shared
     let delegate = AppDelegate(); application.delegate = delegate
-    application.run()
-    if instanceLock >= 0 { close(instanceLock) }
+    withExtendedLifetime(instanceLock) { application.run() }
 }
