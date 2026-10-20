@@ -19,9 +19,9 @@
 	<key>CFBundleSignature</key>
 	<string>DUCK</string>
 	<key>CFBundleVersion</key>
-	<string>8</string>
+	<string>9</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2.2-beta.1</string>
+	<string>1.2.2</string>
 	<key>CFBundleIconFile</key>
 	<string>CopyDuck.icns</string>
 	<key>NSPrincipalClass</key>

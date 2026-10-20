@@ -51,6 +51,10 @@ zsh scripts/test_typing.sh
 
 检查设置窗口反复开关后能重新创建界面，关闭后菜单栏及快捷键仍有效。使用活动监视器或 Instruments 比较闲置、反复开关设置、长文本输入/取消后的内存趋势，勿把一次 RSS 数值下降或系统缓存保留误当成泄漏结论。
 
+## 1.2.2 正式版
+
+正式版沿用 1.2.2-beta.1 的启动修复代码，构建编号递增为 9，确保 beta 组件也会升级。提供 DMG、App 压缩包与 SHA-256 校验文件。已通过构建、签名和自动回归；没有新增 macOS 26 的桌面验证记录，兼容性警告继续保留。
+
 ## 更新版本
 
 1. 同步修改 `Resources/Info.plist` 和 `Resources/InputMethodInfo.plist` 的 `CFBundleShortVersionString`，并递增 `CFBundleVersion`。两个 bundle 的版本必须一致；输入组件根据构建编号判断是否自动更新。

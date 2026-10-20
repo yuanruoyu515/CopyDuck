@@ -26,6 +26,7 @@ Apple Silicon · 建置最低版本 macOS 14 · 僅在 macOS 27.0.1 上驗證
 
 | 版本 | 下載 | 說明 |
 | --- | --- | --- |
+| 1.2.2 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.2/CopyDuck-1.2.2-arm64.dmg) · [App 壓縮檔](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.2/CopyDuck-1.2.2-arm64.app.zip) | [版本說明](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2.2) |
 | 1.2.1 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.1/CopyDuck-1.2.1-arm64.dmg) · [App 壓縮檔](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.1/CopyDuck-1.2.1-arm64.app.zip) | [版本說明](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2.1) |
 | 1.2 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.dmg) · [App 壓縮檔](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.app.zip) | [版本說明](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2) |
 | 1.1 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.1/CopyDuck-1.1-arm64.dmg) · [App 壓縮檔](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.1/CopyDuck-1.1-arm64.app.zip) | [版本說明](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.1) |
@@ -90,9 +91,9 @@ Apple Silicon · 建置最低版本 macOS 14 · 僅在 macOS 27.0.1 上驗證
 
 ## 版本紀錄
 
-1.2.1 改善 Word 首次觸發與輸入誤停，強化取消任務與關閉設定時的記憶體清理。1.2 新增一般模式／模擬輸入切換與三段打字速度；1.1 修復元件自動啟動並調整圖示；1.0 保留最初的功能版本。
+1.2.2 修復程序無法正確執行、重複啟動造成大量資源占用的問題，並修復設定視窗無法正常開啟。 1.2.1 改善 Word 首次觸發與輸入誤停，強化取消任務與關閉設定時的記憶體清理。1.2 新增一般模式／模擬輸入切換與三段打字速度；1.1 修復元件自動啟動並調整圖示；1.0 保留最初的功能版本。
 
-Git 歷史保留 v1.0、v1.1、v1.2 與 v1.2.1 標籤；後續修改在 main 分支維護。發佈流程請見 [開發說明](DEVELOPMENT.md).
+Git 歷史保留各正式版本與 beta 標籤；後續修改在 main 分支維護。發佈流程請見 [開發說明](DEVELOPMENT.md).
 
 ## 從原始碼建置
 

@@ -26,6 +26,7 @@ Apple Silicon · Minimum build target: macOS 14 · Verified only on macOS 27.0.1
 
 | Version | Download | Notes |
 | --- | --- | --- |
+| 1.2.2 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.2/CopyDuck-1.2.2-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.2/CopyDuck-1.2.2-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2.2) |
 | 1.2.1 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.1/CopyDuck-1.2.1-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.1/CopyDuck-1.2.1-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2.1) |
 | 1.2 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2) |
 | 1.1 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.1/CopyDuck-1.1-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.1/CopyDuck-1.1-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.1) |
@@ -90,9 +91,9 @@ Choose “退出复制鸭” (Quit CopyDuck) in its menu. Before uninstalling, d
 
 ## Version history
 
-1.2.1 improves first-trigger behavior in Word, prevents unintended input cancellation, and strengthens resource cleanup when cancelling input or closing Settings. 1.2 adds Normal / Simulated Typing and three speeds; 1.1 fixes component startup and centers the icons; 1.0 preserves the original feature release.
+1.2.2 fixes startup process failures and repeated launches that cause excessive resource usage, and fixes Settings failing to open. 1.2.1 improves first-trigger behavior in Word, prevents unintended input cancellation, and strengthens resource cleanup when cancelling input or closing Settings. 1.2 adds Normal / Simulated Typing and three speeds; 1.1 fixes component startup and centers the icons; 1.0 preserves the original feature release.
 
-Git history preserves the v1.0, v1.1, v1.2 and v1.2.1 tags. Maintain future changes on main. See the release workflow in [the development guide](DEVELOPMENT.md).
+Git history preserves stable and beta version tags. Maintain future changes on main. See the release workflow in [the development guide](DEVELOPMENT.md).
 
 ## Build from source
 

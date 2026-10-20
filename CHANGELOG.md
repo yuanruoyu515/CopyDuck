@@ -1,5 +1,31 @@
 # 版本记录 / 版本紀錄 / Changelog
 
+## 1.2.2 — 2026-10-20
+
+**简体中文**
+
+- 修复进程无法正确运行、重复启动造成大量资源占用的问题，以及设置窗口无法正常打开的问题。
+- 主程序与输入法组件使用不同的应用身份，内嵌、安装和签名分别处理；保留原来的快捷键、模式及速度偏好。
+- 主程序和组件分别防止重复启动；等设置窗口确认打开后再退出启动器，超时显示错误。
+- 保留 1.2.1 的 Word 输入及资源清理改进。正式版构建编号 9，确保 build 8 beta 的组件也能升级。
+- 已通过编译、签名及自动回归；macOS 26 的兼容性与资源占用仍待实际验证。
+
+**繁體中文**
+
+- 修復程序無法正確執行、重複啟動造成大量資源占用，以及設定視窗無法正常開啟的問題。
+- 主程式與輸入法元件採用不同的應用程式身分，分別處理內嵌、安裝與簽署；保留原有快捷鍵、模式與速度偏好。
+- 主程式與元件分別防止重複啟動；收到設定視窗開啟確認後才結束啟動器，逾時顯示錯誤。
+- 保留 1.2.1 的 Word 輸入與資源清理改進。正式版組建編號 9，可升級 build 8 beta 元件。
+- 已通過建置、簽署與自動回歸；macOS 26 的相容性及資源占用仍待實際驗證。
+
+**English**
+
+- Fix startup process failures and repeated launches that cause excessive resource usage, and Settings failing to open.
+- Give the launcher and input-method component distinct bundle identities; embed, install and sign the component separately while retaining the original preferences domain.
+- Enforce one instance per role and wait for Settings to acknowledge opening before exiting the launcher, with a visible timeout error.
+- Retain the Word input and resource-cleanup improvements from 1.2.1. Stable build 9 upgrades the build 8 beta component.
+- Build, signatures and automated regression checks passed. macOS 26 compatibility and resource usage still require desktop verification.
+
 ## 1.2.1 — 2026-10-19
 
 **简体中文**
