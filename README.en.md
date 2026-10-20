@@ -4,6 +4,10 @@
 
 [简体中文](README.md) · [繁體中文](README.zh-Hant.md) · [English](README.en.md)
 
+> [!WARNING]
+> **Compatibility and resource usage warning**
+> Currently verified only on macOS 27.0.1. Compatibility with macOS versions earlier than 27 is not guaranteed. A user reported extremely high memory and CPU usage on macOS 26 with a version released before the startup fix; the newer version has not yet been verified on that system. If this occurs, quit CopyDuck; if it is unresponsive, end its process in Activity Monitor.
+
 **Copy it. Let the duck type.**
 
 💢 An input field blocks pasting or distinguishes pasted text from regular input, leaving you to type everything again?
@@ -18,7 +22,7 @@ The author was struggling to finish assignments in AP CSA when Albert was config
 
 ## Downloads
 
-Apple Silicon · macOS 14 or later · Tested on macOS 27.0.1
+Apple Silicon · Minimum build target: macOS 14 · Verified only on macOS 27.0.1
 
 | Version | Download | Notes |
 | --- | --- | --- |

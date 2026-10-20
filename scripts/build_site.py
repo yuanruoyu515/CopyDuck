@@ -36,7 +36,7 @@ for language, text in config["languages"].items():
 <link rel="canonical" href="{homepage}{paths[language]}">{alternates}<link rel="icon" href="{prefix}assets/favicon.png"><link rel="stylesheet" href="{prefix}style.css"></head>
 <body><a class="skip" href="#main">{text['skip']}</a>
 <header><div class="top wrap"><a class="brand" href="{prefix}{paths[language]}"><img src="{prefix}assets/favicon.png" alt="" width="42" height="42">{text['name']}</a><nav class="language" aria-label="{text['language']}">{nav}</nav></div></header>
-<main id="main" class="wrap"><section class="hero"><div><p class="eyebrow">{text['eyebrow']}</p><h1>{text['heroTitle'][0]}<br>{text['heroTitle'][1]}</h1><p class="lead">{escape(text['pain'])}</p><p class="lead">{text['description']}</p><div class="actions"><a class="button primary" href="{download(current_version, 'dmg')}">{text['download']} <span aria-hidden="true">↓</span></a><a class="button" href="{repo}">{text['source']} <span aria-hidden="true">↗</span></a></div><p class="compatibility">{text['compatibility']}</p></div>
+<main id="main" class="wrap"><aside class="compatibility-warning" role="note"><strong>⚠️ {escape(text['compatibilityWarningTitle'])}</strong><p>{escape(text['compatibilityWarning'])}</p></aside><section class="hero"><div><p class="eyebrow">{text['eyebrow']}</p><h1>{text['heroTitle'][0]}<br>{text['heroTitle'][1]}</h1><p class="lead">{escape(text['pain'])}</p><p class="lead">{text['description']}</p><div class="actions"><a class="button primary" href="{download(current_version, 'dmg')}">{text['download']} <span aria-hidden="true">↓</span></a><a class="button" href="{repo}">{text['source']} <span aria-hidden="true">↗</span></a></div><p class="compatibility">{text['compatibility']}</p></div>
 <div class="duck-stage"><div class="duck-card"><img src="{prefix}assets/duck.png" alt="" width="512" height="512" fetchpriority="high"></div><div class="shortcut"><span>{text['example']}</span><div aria-label="Control Option V"><kbd>⌃</kbd> <kbd>⌥</kbd> <kbd>V</kbd></div></div><p class="example-text">{text['exampleCaption']}</p></div></section>
 <section class="section"><div class="intro"><h2>{text['originTitle']}</h2><p>{escape(text['origin'])}</p></div></section>\n<section class="section"><div class="intro"><h2>{text['howTitle']}</h2><p>{text['howBody']}</p></div><ol class="flow">{flow}</ol><div class="features">{features}</div></section>
 <section class="section screenshots"><h2>{text['screenshotsTitle']}</h2><p class="intro">{text['screenshotsNote']}</p><div class="screenshot-grid">{screenshots}</div></section>
@@ -58,6 +58,10 @@ for language, text in config["languages"].items():
 # {text['name']} · CopyDuck
 
 {languages}
+
+> [!WARNING]
+> **{text['compatibilityWarningTitle']}**
+> {text['compatibilityWarning']}
 
 **{text['tagline']}**
 

@@ -11,7 +11,7 @@
       "language": "选择语言",
       "download": "下载 1.2.1",
       "source": "查看源码",
-      "compatibility": "Apple Silicon · macOS 14 及以上 · 已在 macOS 27.0.1 实测",
+      "compatibility": "Apple Silicon · 构建最低版本 macOS 14 · 仅在 macOS 27.0.1 上验证",
       "eyebrow": "给 Mac 的小鸭子",
       "heroTitle": [
         "复制一下，",
@@ -130,7 +130,9 @@
       ],
       "pain": "💢 输入框不让粘贴，或者会区分粘贴与正常输入，让你只能重新手打一遍？",
       "originTitle": "💦 灵感来源",
-      "origin": "作者在上 AP CSA 课时赶不完作业，偏偏 Albert 又被设置成不能粘贴，只好反复修改输入法的快捷输入词，把文字一点点塞进去……于是，就有了复制鸭。"
+      "origin": "作者在上 AP CSA 课时赶不完作业，偏偏 Albert 又被设置成不能粘贴，只好反复修改输入法的快捷输入词，把文字一点点塞进去……于是，就有了复制鸭。",
+      "compatibilityWarningTitle": "兼容性与资源占用提醒",
+      "compatibilityWarning": "目前仅在 macOS 27.0.1 上验证，不保证 macOS 27 以下版本可用。已有用户反馈：修复前版本在 macOS 26 上出现内存与 CPU 占用异常飙升；新版在该系统上的表现仍待验证。如遇异常，请立即退出复制鸭；无法退出时，可在活动监视器中结束 CopyDuck 进程。"
     },
     "zh-Hant": {
       "name": "複製鴨",
@@ -140,7 +142,7 @@
       "language": "選擇語言",
       "download": "下載 1.2.1",
       "source": "檢視原始碼",
-      "compatibility": "Apple Silicon · macOS 14 以上 · 已在 macOS 27.0.1 實測",
+      "compatibility": "Apple Silicon · 建置最低版本 macOS 14 · 僅在 macOS 27.0.1 上驗證",
       "eyebrow": "給 Mac 的小鴨子",
       "heroTitle": [
         "複製一下，",
@@ -259,7 +261,9 @@
       ],
       "pain": "💢 輸入框不讓貼上，或是會區分貼上與一般輸入，讓你只能重新手打一遍？",
       "originTitle": "💦 靈感來源",
-      "origin": "作者上 AP CSA 課時趕不完作業，偏偏 Albert 又被設定成不能貼上，只好反覆修改輸入法的快捷輸入詞，把文字一點一點塞進去……於是，就有了複製鴨。"
+      "origin": "作者上 AP CSA 課時趕不完作業，偏偏 Albert 又被設定成不能貼上，只好反覆修改輸入法的快捷輸入詞，把文字一點一點塞進去……於是，就有了複製鴨。",
+      "compatibilityWarningTitle": "相容性與資源占用提醒",
+      "compatibilityWarning": "目前僅在 macOS 27.0.1 上驗證，不保證 macOS 27 以下版本可用。已有使用者回報：修復前版本在 macOS 26 上出現記憶體與 CPU 使用量異常飆升；新版在該系統上的表現仍待驗證。如遇異常，請立即結束複製鴨；無法結束時，可在「活動監視器」中結束 CopyDuck 程序。"
     },
     "en": {
       "name": "CopyDuck",
@@ -269,7 +273,7 @@
       "language": "Choose language",
       "download": "Download 1.2.1",
       "source": "View source",
-      "compatibility": "Apple Silicon · macOS 14 or later · Tested on macOS 27.0.1",
+      "compatibility": "Apple Silicon · Minimum build target: macOS 14 · Verified only on macOS 27.0.1",
       "eyebrow": "A little duck for your Mac",
       "heroTitle": [
         "Copy it.",
@@ -388,7 +392,9 @@
       ],
       "pain": "💢 An input field blocks pasting or distinguishes pasted text from regular input, leaving you to type everything again?",
       "originTitle": "💦 The inspiration",
-      "origin": "The author was struggling to finish assignments in AP CSA when Albert was configured to block pasting. The workaround was to keep changing the input method’s text shortcuts to get the text into the field, bit by bit… That frustration led to CopyDuck."
+      "origin": "The author was struggling to finish assignments in AP CSA when Albert was configured to block pasting. The workaround was to keep changing the input method’s text shortcuts to get the text into the field, bit by bit… That frustration led to CopyDuck.",
+      "compatibilityWarningTitle": "Compatibility and resource usage warning",
+      "compatibilityWarning": "Currently verified only on macOS 27.0.1. Compatibility with macOS versions earlier than 27 is not guaranteed. A user reported extremely high memory and CPU usage on macOS 26 with a version released before the startup fix; the newer version has not yet been verified on that system. If this occurs, quit CopyDuck; if it is unresponsive, end its process in Activity Monitor."
     }
   },
   "screenshots": [

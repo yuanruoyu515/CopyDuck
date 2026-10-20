@@ -5,3 +5,8 @@
 .screenshot-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:32px;align-items:start}.screenshot{margin:0;min-width:0}.screenshot a{display:flex;align-items:center;justify-content:center;background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);padding:18px;overflow:hidden}.screenshot img{width:100%;height:auto}.screenshot figcaption{padding:18px 4px 0}.screenshot h3{margin-bottom:8px}.screenshot p{font-size:13px;margin-bottom:0}.screenshot:last-child{max-width:420px}.screenshot:last-child a{padding:0}.screenshot a:hover{border-color:#c9d2c5}@media(max-width:760px){.screenshot-grid{grid-template-columns:1fr;gap:24px}.screenshot:last-child{max-width:100%}.screenshot a{padding:12px}}
 
 .features article:last-child{grid-column:1/-1;max-width:730px}
+
+/* Keep the compatibility notice visible before the download call to action. */
+.compatibility-warning { margin-top: 24px; padding: 18px 22px; border: 1px solid #e8b74f; border-left: 5px solid #b26b00; border-radius: 12px; background: #fff4d6; color: #553800; }
+.compatibility-warning strong { display: block; font-size: 16px; }
+.compatibility-warning p { margin: 8px 0 0; line-height: 1.7; }
