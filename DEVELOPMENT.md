@@ -78,6 +78,12 @@ Class Companion 暂无可用作业，尚未完成该网站回归。模拟输入�
 
 本地 beta 未发布，网站与 README 的正式版下载保持 1.2.2。原 build 9 组件备份保存在忽略的 `build/installed-build9-backup.app`。
 
+## 1.2.3-beta.5 三语界面
+
+本地测试版构建编号为 14。设置窗口右上角的地球图标始终可见，提供简体中文、繁體中文及 English。选择写入既有共享偏好域的 `interfaceLanguage`；旧用户和无效值默认简体中文。设置窗口、菜单栏、窗口标题、输入状态和安装错误使用同一语言。切换时刷新提示文字；关闭并重新打开窗口、重启组件后应保留选择。语言切换不改变输入模式、快捷键和输入组件身份。
+
+`zsh scripts/test_typing.sh` 包含语言偏好回退与三语提示测试。实际桌面检查确认图标在切换前后始终位于右上角，弹出列表可选择三种语言，英文和繁体文案没有遮挡控件。尚未用实际输入任务回归三种语言下的输入提示。本地 beta 尚未发布，网站和 README 的正式版下载继续指向 1.2.2。
+
 ## 更新版本
 
 1. 同步修改 `Resources/Info.plist` 和 `Resources/InputMethodInfo.plist` 的 `CFBundleShortVersionString`，并递增 `CFBundleVersion`。两个 bundle 的版本必须一致；输入组件根据构建编号判断是否自动更新。

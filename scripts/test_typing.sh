@@ -12,3 +12,6 @@ build/ShortcutEventTests
 swiftc -module-cache-path build/module-cache -swift-version 5 \
   Sources/Typing.swift Sources/InputPreparation.swift Tests/InputPreparationTests.swift -o build/InputPreparationTests
 build/InputPreparationTests
+swiftc -module-cache-path build/module-cache -swift-version 5 \
+  Sources/Typing.swift Sources/Localization.swift Tests/LocalizationTests.swift -o build/LocalizationTests
+build/LocalizationTests

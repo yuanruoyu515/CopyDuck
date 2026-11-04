@@ -1,5 +1,22 @@
 # 版本记录 / 版本紀錄 / Changelog
 
+## 1.2.3-beta.5 — 2026-11-03（本地测试 / 本機測試 / local testing）
+
+**简体中文**
+
+- 设置窗口右上角新增常驻语言图标，可切换简体中文、繁體中文和 English。窗口、菜单栏及输入状态提示随选择更新，语言保存在原有共享偏好中。
+- 构建编号 14。保留 1.2.3-beta.4 的 Safari 输入修复；本地 beta 尚未发布到 GitHub Releases。
+
+**繁體中文**
+
+- 設定視窗右上角新增常駐語言圖示，可切換简体中文、繁體中文和 English。視窗、選單列及輸入狀態提示會依選擇更新，語言儲存在原有的共用偏好中。
+- 組建編號 14。保留 1.2.3-beta.4 的 Safari 輸入修復；本機 beta 尚未發布至 GitHub Releases。
+
+**English**
+
+- Add an always visible language icon in the top right of Settings. Switch between Simplified Chinese, Traditional Chinese and English. Settings, the menu bar and input feedback update with the saved language preference.
+- Build 14 retains the Safari input fix from 1.2.3-beta.4. This local beta has not been published to GitHub Releases.
+
 ## 1.2.3-beta.4 — 2026-11-03（本地测试 / 本機測試 / local testing）
 
 **简体中文**

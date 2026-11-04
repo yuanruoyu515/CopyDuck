@@ -43,7 +43,7 @@ final class Insertion {
             guard let self, let request = self.pending,
                   let application = NSWorkspace.shared.frontmostApplication,
                   application.processIdentifier != request.targetPID else { return }
-            self.stop(message: "已切换应用，输入已停止（已输入 \(self.written) 字）。")
+            self.stop(message: L10n.countMessage(.switchedApp, count: self.written))
         }
     }
 
@@ -55,14 +55,14 @@ final class Insertion {
         if pending != nil { stop(); return }
         restoreIfNeeded()
         guard let text = NSPasteboard.general.string(forType: .string), !text.isEmpty else {
-            report?("剪贴板里没有文字，先复制一段文字吧。", true); return
+            report?(L10n.text("剪贴板里没有文字，先复制一段文字吧。"), true); return
         }
         guard let application = NSWorkspace.shared.frontmostApplication,
               let target = application.bundleIdentifier, target != InputSources.bundleID else {
-            report?("请先点一下要输入文字的位置，再按快捷键。", true); return
+            report?(L10n.text("请先点一下要输入文字的位置，再按快捷键。"), true); return
         }
         guard let duck = InputSources.duck(), InputSources.ready else {
-            report?("输入组件尚未启用，请打开设置完成启用。", true); return
+            report?(L10n.text("输入组件尚未启用，请打开设置完成启用。"), true); return
         }
         let request = Request(text: text, target: target, targetPID: application.processIdentifier,
                               previous: InputSources.current(), mode: mode, speed: speed, shortcut: shortcut)
@@ -70,7 +70,7 @@ final class Insertion {
         pending = request; written = 0; activityChanged?(true)
         let requestID = request.id
         mouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown]) { [weak self] _ in
-            self?.stop(message: "输入位置已改变，输入已停止。")
+            self?.stop(message: L10n.text("输入位置已改变，输入已停止。"))
         }
         let previousID = InputSources.string(request.previous, kTISPropertyInputSourceID) ?? ""
         let desiredID = InputSources.string(duck, kTISPropertyInputSourceID) ?? ""
@@ -104,15 +104,15 @@ final class Insertion {
             guard let self, self.pending?.id == requestID else { return }
             guard let request = self.pending,
                   let controller = self.preparedController(for: request), let client = controller.client() else {
-                self.finish(id: requestID, message: "输入连接已改变，请重新触发输入。", error: true); return
+                self.finish(id: requestID, message: L10n.text("输入连接已改变，请重新触发输入。"), error: true); return
             }
             self.deliver(to: client, controller: controller)
         }, failed: { [weak self] reason in
             let message: String
             switch reason {
-            case .sourceChanged: message = "输入法已改变，本次输入已取消。"
-            case .selectionFailed: message = "暂时无法切换输入组件，请重新启用后再试。"
-            case .timedOut: message = "没有连接到输入框。请松开快捷键，点一下输入位置后重试。"
+            case .sourceChanged: message = L10n.text("输入法已改变，本次输入已取消。")
+            case .selectionFailed: message = L10n.text("暂时无法切换输入组件，请重新启用后再试。")
+            case .timedOut: message = L10n.text("没有连接到输入框。请松开快捷键，点一下输入位置后重试。")
             }
             self?.finish(id: requestID, message: message, error: true, restore: reason != .sourceChanged)
         })
@@ -149,7 +149,7 @@ final class Insertion {
         guard let request = pending, !delivering else { return }
         guard clientIsReady(client, for: request), pending?.id == request.id,
               preparedController(for: request) === controller, isTargetActive(request) else {
-            finish(id: request.id, message: "输入位置已改变，请重新触发输入。", error: true); return
+            finish(id: request.id, message: L10n.text("输入位置已改变，请重新触发输入。"), error: true); return
         }
         // Keep ownership throughout delivery; repeated activation must not replay the text.
         delivering = true; deliveryController = controller
@@ -158,10 +158,10 @@ final class Insertion {
         if request.mode == .normal {
             client.insertText(request.text, replacementRange: NSRange(location: NSNotFound, length: 0))
             guard pending?.id == request.id else { return }
-            finish(id: request.id, message: "已向输入框写入 \(request.text.count) 个字符。", error: false)
+            finish(id: request.id, message: L10n.countMessage(.inserted, count: request.text.count), error: false)
             return
         }
-        report?("正在模拟输入（\(request.speed.title)），再次按快捷键可停止。", false)
+        report?(L10n.simulatedProgress(request.speed), false)
         typing.start(text: request.text, speed: request.speed, attempt: { [weak self, weak controller] character in
             guard let self, let request = self.pending, request.id == requestID, let controller,
                   NSWorkspace.shared.frontmostApplication?.processIdentifier == request.targetPID else { return .stopped }
@@ -185,7 +185,7 @@ final class Insertion {
             return .inserted
         }, completion: { [weak self] completed in
             guard let self else { return }
-            let message = completed ? "已模拟输入 \(self.written) 个字符。" : "输入位置已改变，模拟输入已停止（已输入 \(self.written) 字）。"
+            let message = L10n.countMessage(completed ? .simulated : .movedFocus, count: self.written)
             self.finish(id: requestID, message: message, error: false)
         })
     }
@@ -198,7 +198,7 @@ final class Insertion {
             logger.debug("Ignored activation from a background input client")
             return
         }
-        if delivering, deliveryController !== controller { stop(message: "输入位置已改变，输入已停止。") }
+        if delivering, deliveryController !== controller { stop(message: L10n.text("输入位置已改变，输入已停止。")) }
         if !wasActive { availableAfter = now + 0.12 }
     }
 
@@ -206,7 +206,7 @@ final class Insertion {
         logger.debug("Deactivate \(String(describing: ObjectIdentifier(controller)), privacy: .public), closing: \(closing)")
         focus.deactivate(controller, closing: closing)
         guard deliveryController === controller else { return }
-        if closing { stop(message: "输入框已关闭，输入已停止（已输入 \(written) 字）。") }
+        if closing { stop(message: L10n.countMessage(.fieldClosed, count: written)) }
         else if reconnectUntil == nil { reconnectUntil = now + 0.6 }
     }
 
@@ -249,7 +249,7 @@ final class Insertion {
 
     func stop(message: String? = nil) {
         if let request = pending {
-            finish(id: request.id, message: message ?? "已停止输入（已输入 \(written) 字）。", error: false)
+            finish(id: request.id, message: message ?? L10n.countMessage(.stopped, count: written), error: false)
         }
     }
 

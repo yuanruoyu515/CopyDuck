@@ -43,6 +43,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
             NSApp.terminate(nil)
         })
         model.installAction = { [weak self] in self?.startOrInstallComponent() }
+        model.languageChanged = { [weak self] in
+            guard let self else { return }
+            self.window?.title = L10n.text("复制鸭", language: self.model.language)
+            self.statusItem?.button?.toolTip = L10n.text("复制鸭", language: self.model.language) + " · " + self.model.shortcut.display
+        }
         if !InputSources.isComponentProcess && InputSources.hasInstalledComponent {
             startOrInstallComponent()
             return
@@ -55,7 +60,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         statusItem.button?.image = DuckArtwork.menuIcon(size: 18)
         statusItem.button?.imagePosition = .imageOnly
         statusItem.button?.imageScaling = .scaleProportionallyDown
-        statusItem.button?.toolTip = "复制鸭 · " + model.shortcut.display
+        statusItem.button?.toolTip = L10n.text("复制鸭") + " · " + model.shortcut.display
         let menu = NSMenu(); menu.delegate = self; statusItem.menu = menu
         if InputSources.isComponentProcess {
             server = IMKServer(name: InputSources.connection, bundleIdentifier: InputSources.bundleID)
@@ -82,33 +87,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     }
     func menuWillOpen(_ menu: NSMenu) {
         model.refresh(); menu.removeAllItems()
-        let heading = NSMenuItem(title: "复制鸭  ·  " + (model.ready ? "已就绪" : "待设置"), action: nil, keyEquivalent: "")
+        let heading = NSMenuItem(title: L10n.text("复制鸭") + "  ·  " + L10n.text(model.ready ? "已就绪" : "待设置"), action: nil, keyEquivalent: "")
         menu.addItem(heading)
-        let shortcut = NSMenuItem(title: "输入最新文字  " + model.shortcut.display, action: nil, keyEquivalent: "")
+        let shortcut = NSMenuItem(title: L10n.text("输入最新文字") + "  " + model.shortcut.display, action: nil, keyEquivalent: "")
         menu.addItem(shortcut)
         menu.addItem(.separator())
         for mode in InputMode.allCases {
-            let item = NSMenuItem(title: mode.title, action: #selector(selectMode(_:)), keyEquivalent: "")
+            let item = NSMenuItem(title: L10n.text(mode.title), action: #selector(selectMode(_:)), keyEquivalent: "")
             item.target = self; item.representedObject = mode.rawValue
             item.state = model.inputMode == mode ? .on : .off
             menu.addItem(item)
         }
-        let speed = NSMenuItem(title: "模拟输入速度 · " + model.typingSpeed.title, action: nil, keyEquivalent: "")
+        let speed = NSMenuItem(title: L10n.text("模拟输入速度") + " · " + L10n.text(model.typingSpeed.title), action: nil, keyEquivalent: "")
         let speeds = NSMenu()
         for value in TypingSpeed.allCases {
-            let item = NSMenuItem(title: value.title + "（" + value.detail + "）", action: #selector(selectSpeed(_:)), keyEquivalent: "")
+            let parentheses = model.language == .english ? (" (", ")") : ("（", "）")
+            let item = NSMenuItem(title: L10n.text(value.title) + parentheses.0 + L10n.speedDetail(value, language: model.language) + parentheses.1, action: #selector(selectSpeed(_:)), keyEquivalent: "")
             item.target = self; item.representedObject = value.rawValue
             item.state = model.typingSpeed == value ? .on : .off
             speeds.addItem(item)
         }
         speed.submenu = speeds; menu.addItem(speed)
         if model.isInserting {
-            let stop = NSMenuItem(title: "停止输入", action: #selector(stopInsertion), keyEquivalent: "")
+            let stop = NSMenuItem(title: L10n.text("停止输入"), action: #selector(stopInsertion), keyEquivalent: "")
             stop.target = self; menu.addItem(stop)
         }
         menu.addItem(.separator())
-        let settings = NSMenuItem(title: "设置…", action: #selector(showSettings), keyEquivalent: ","); settings.target = self; menu.addItem(settings)
-        let quit = NSMenuItem(title: "退出复制鸭", action: #selector(quit), keyEquivalent: "q"); quit.target = self; menu.addItem(quit)
+        let settings = NSMenuItem(title: L10n.text("设置…"), action: #selector(showSettings), keyEquivalent: ","); settings.target = self; menu.addItem(settings)
+        let quit = NSMenuItem(title: L10n.text("退出复制鸭"), action: #selector(quit), keyEquivalent: "q"); quit.target = self; menu.addItem(quit)
     }
     @objc private func selectMode(_ sender: NSMenuItem) {
         guard let raw = sender.representedObject as? String, let value = InputMode(rawValue: raw) else { return }
@@ -123,7 +129,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         model.refresh()
         if window == nil {
             let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 550, height: 710), styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
-            window.title = "复制鸭"; window.isReleasedWhenClosed = false
+            window.title = L10n.text("复制鸭"); window.isReleasedWhenClosed = false
             window.titlebarAppearsTransparent = true; window.backgroundColor = .white
             window.contentView = NSHostingView(rootView: SettingsView(model: model)); window.delegate = self
             window.center(); self.window = window
@@ -134,6 +140,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
     func windowWillClose(_ notification: Notification) {
         guard let closing = notification.object as? NSWindow, closing === window else { return }
         model.stopRecording()
+        model.showingLanguages = false
         closing.contentView = nil
         window = nil
     }
@@ -165,7 +172,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
             guard let self else { return }
             if Date() >= self.launchDeadline {
                 self.finishLaunch()
-                self.showFailure("组件未能确认打开设置。请先从菜单栏退出复制鸭，再重试；若仍无响应，请注销并重新登录。")
+                self.showFailure(L10n.text("组件未能确认打开设置。请先从菜单栏退出复制鸭，再重试；若仍无响应，请注销并重新登录。"))
             } else { self.requestComponentSettings() }
         }
         requestComponentSettings()
@@ -180,7 +187,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
                 guard self.launching else { return }
                 if let error {
                     self.finishLaunch()
-                    self.showFailure("启动未完成：\(error.localizedDescription)")
+                    self.showFailure(L10n.text("启动未完成：") + error.localizedDescription)
                 } else {
                     // Launch Services success only means the open was accepted.
                     // Wait until the component has actually displayed its window.
@@ -214,26 +221,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
             try fm.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
             if fm.fileExists(atPath: destination.path) {
                 guard let previous = Bundle(url: destination), previous.bundleIdentifier == InputSources.bundleID else {
-                    throw NSError(domain: "CopyDuck", code: 1, userInfo: [NSLocalizedDescriptionKey: "安装位置已有另一个同名应用，请先移走它。"])
+                    throw NSError(domain: "CopyDuck", code: 1, userInfo: [NSLocalizedDescriptionKey: L10n.text("安装位置已有另一个同名应用，请先移走它。")])
                 }
             }
             try fm.createDirectory(at: transaction, withIntermediateDirectories: true)
             let bundledComponent = InputSources.bundledComponentURL
             guard let bundle = Bundle(url: bundledComponent), bundle.bundleIdentifier == InputSources.bundleID else {
-                throw NSError(domain: "CopyDuck", code: 3, userInfo: [NSLocalizedDescriptionKey: "安装包中缺少有效的输入组件，请重新下载或构建。"])
+                throw NSError(domain: "CopyDuck", code: 3, userInfo: [NSLocalizedDescriptionKey: L10n.text("安装包中缺少有效的输入组件，请重新下载或构建。")])
             }
             try fm.copyItem(at: bundledComponent, to: staged)
             let running = InputSources.runningComponents
             for application in running {
                 guard application.terminate() else {
-                    throw NSError(domain: "CopyDuck", code: 2, userInfo: [NSLocalizedDescriptionKey: "暂时无法退出旧组件，请从菜单栏退出复制鸭后再打开。"])
+                    throw NSError(domain: "CopyDuck", code: 2, userInfo: [NSLocalizedDescriptionKey: L10n.text("暂时无法退出旧组件，请从菜单栏退出复制鸭后再打开。")])
                 }
             }
             completeInstall(staged: staged, transaction: transaction, waitingFor: running, deadline: Date().addingTimeInterval(5))
         } catch {
             try? FileManager.default.removeItem(at: transaction)
             installing = false
-            showFailure("安装未完成：\(error.localizedDescription)")
+            showFailure(L10n.text("安装未完成：") + error.localizedDescription)
         }
     }
     private func completeInstall(staged: URL, transaction: URL, waitingFor running: [NSRunningApplication], deadline: Date) {
@@ -241,7 +248,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
             guard Date() < deadline else {
                 try? FileManager.default.removeItem(at: transaction)
                 installing = false
-                showFailure("旧组件尚未退出，请从菜单栏退出复制鸭后再打开。")
+                showFailure(L10n.text("旧组件尚未退出，请从菜单栏退出复制鸭后再打开。"))
                 return
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
@@ -268,7 +275,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
             launchComponent()
         } catch {
             installing = false
-            showFailure("安装未完成：\(error.localizedDescription)")
+            showFailure(L10n.text("安装未完成：") + error.localizedDescription)
         }
     }
 }
@@ -307,8 +314,8 @@ if CommandLine.arguments.contains("--diagnostics") {
         let application = NSApplication.shared
         application.setActivationPolicy(.accessory)
         let alert = NSAlert()
-        alert.messageText = "复制鸭无法启动"
-        alert.informativeText = "无法创建启动锁：\(error.localizedDescription)"
+        alert.messageText = L10n.text("复制鸭无法启动")
+        alert.informativeText = L10n.text("无法创建启动锁：") + error.localizedDescription
         application.activate(ignoringOtherApps: true)
         alert.runModal()
         exit(1)
