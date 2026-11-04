@@ -48,78 +48,109 @@ for language, text in config["languages"].items():
     destination = ROOT / 'docs' / paths[language]
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(html)
-    languages = ' · '.join(f'[{labels[lang]}]({file})' for lang, file in readmes.items())
-    feature_lines = '\n'.join(f'- **{title}**：{body}' for title, body in text['features'])
+    languages = ' · '.join(f'**{labels[lang]}**' if lang == language else f'[{labels[lang]}]({file})' for lang, file in readmes.items())
+    def icon(name):
+        return f'<img src="assets/readme/icons/{name}.svg" width="20" height="20" align="top">'
+    feature_lines = '\n'.join(f'- **{title}**：{body}' if language != 'en' else f'- **{title}**: {body}' for title, body in text['features'])
+    quick_lines = '\n'.join(f'{index}. **{title}**　{body}' for index, (title, body) in enumerate(text['steps'], 1))
     install_lines = '\n'.join(f'{index}. {item}' for index, item in enumerate(text['installSteps'], 1))
-    rows = '\n'.join(f"| {version} | [DMG]({download(version, 'dmg')}) · [{text['appZip']}]({download(version, 'app.zip')}) | [{text['releaseNotes']}]({repo}/releases/tag/v{version}) |" for version in versions)
-    screenshot_markdown = '\n\n'.join(f"### {title}\n\n<img src=\"docs/assets/{shot['file']}\" alt=\"{escape(title, quote=True)}\" width=\"{560 if index < 2 else 360}\">\n\n{caption}" for index, (shot, title, caption) in enumerate(zip(config['screenshots'], text['screenshotTitles'], text['screenshotCaptions'])))
-    markdown = f'''<p align="center"><img src="docs/assets/duck.png" alt="{text['name']}" width="128"></p>
+    older = [version for version in versions if version != current_version]
+    rows = '\n'.join(f"| {version} | [DMG]({download(version, 'dmg')}) · [{text['appZip']}]({download(version, 'app.zip')}) | [{text['releaseNotes']}]({repo}/releases/tag/v{version}) |" for version in older)
+    requirement_rows = '\n'.join(f'| {label} | {value} |' for label, value in text['requirements'])
+    faq_lines = '\n\n'.join(f'**{question}**\n{answer}' for question, answer in text['faq'][:3])
+    version_lines = '\n'.join(f'- **{version}**{"：" if language != "en" else ": "}{note}' for version, note in text['versionNotes'])
+    shots = list(zip(config['screenshots'], text['screenshotTitles'], text['screenshotCaptions']))
+    shot_cells = ''.join(f'''
+    <td width="{width}%" valign="top">
+      <img src="docs/assets/{shot['file']}" alt="{escape(title, quote=True)}">
+      <p><b>{escape(title)}</b><br><sub>{escape(caption)}</sub></p>
+    </td>''' for (shot, title, caption), width in zip(shots, (34, 40, 26)))
+    markdown = f'''<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/banner-{language}-dark.png">
+  <img alt="{escape(text['readmeBannerAlt'], quote=True)}" src="assets/readme/banner-{language}-light.png">
+</picture>
 
-# {text['name']} · CopyDuck
+<p>
+  <a href="{repo}/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/yuanruoyu515/CopyDuck?label=release&color=F2A33A"></a>
+  <img alt="macOS 14+" src="https://img.shields.io/badge/macOS-14%2B-18181B?logo=apple&logoColor=white">
+  <img alt="Apple Silicon" src="https://img.shields.io/badge/Apple_Silicon-arm64-18181B">
+  <img alt="Swift, system frameworks only" src="https://img.shields.io/badge/Swift-system_frameworks_only-F2A33A?logo=swift&logoColor=white">
+  <a href="https://www.threads.com/@realtimyry"><img alt="Threads @realtimyry" src="https://img.shields.io/badge/Threads-@realtimyry-18181B?logo=threads&logoColor=white"></a>
+</p>
 
-{languages}
-
-> [!WARNING]
-> **{text['compatibilityWarningTitle']}**
-> {text['compatibilityWarning']}
-
-**{text['tagline']}**
+{languages} · [{text['homeLink']}]({homepage}{paths[language]}) · [{text['allReleases']}]({repo}/releases)
 
 {text['pain']}
 
 {text['description']}
 
-## {text['originTitle']}
+**{text['originTitle']}**　{text['origin']}
 
-{text['origin']}
+> [!WARNING]
+> **{text['compatibilityWarningTitle']}**
+> {text['compatibilityWarning']}
 
-[{text['homeLink']}]({homepage}{paths[language]}) · [{text['allReleases']}]({repo}/releases)
-
-## {text['readmeDownload']}
-
-{text['compatibility']}
-
-| {text["tableLabels"][0]} | {text["tableLabels"][1]} | {text["tableLabels"][2]} |
-| --- | --- | --- |
-{rows}
-
-## {text['readmeFeatures']}
+## {icon('cursor-click')} {text['readmeFeatures']}
 
 {feature_lines}
 
-## {text['screenshotsTitle']}
+### {text['readmeQuick']}
 
-{text['screenshotsNote']}
+{quick_lines}
 
-{screenshot_markdown}
+<table>
+  <tr>{shot_cells}
+  </tr>
+</table>
 
-## {text['readmeInstall']}
+<sub>{text['screenshotsNote']}</sub>
+
+## {icon('download-simple')} {text['readmeDownload']}
+
+{text['compatibility']}
+
+**[{text['readmeLatest']} · {current_version} DMG]({download(current_version, 'dmg')})** · [{text['appZip']}]({download(current_version, 'app.zip')}) · [{text['releaseNotes']}]({repo}/releases/tag/v{current_version})
 
 {install_lines}
 
 {text['installNote']}
 
-{text["defaultShortcut"]}: **⌃⌥V** (Control + Option + V).
+{text["defaultShortcut"]}: <kbd>⌃</kbd> <kbd>⌥</kbd> <kbd>V</kbd> (Control + Option + V).
 
-## {text['readmeImplementation']}
+<details>
+<summary>{text['readmeOlder']}</summary>
+
+| {text["tableLabels"][0]} | {text["tableLabels"][1]} | {text["tableLabels"][2]} |
+| --- | --- | --- |
+{rows}
+
+</details>
+
+## {icon('puzzle-piece')} {text['readmeRequirements']}
+
+| | |
+| --- | --- |
+{requirement_rows}
+
+## {icon('tree-structure')} {text['readmeImplementation']}
 
 {text['howBody']}
 
-`NSPasteboard → TISSelectInputSource → IMKTextInput.insertText → restore previous input source`
+```text
+NSPasteboard → TISSelectInputSource → IMKTextInput.insertText → restore previous input source
+```
 
-## {text['readmeNotes']}
+## {icon('warning-circle')} {text['readmeLimits']}
 
-{text['faq'][0][1]}
+{faq_lines}
 
-{text['faq'][1][1]}
-
-{text['faq'][2][1]}
+## {icon('trash')} {text['readmeUninstall']}
 
 {text['faq'][3][1]}
 
 ## {text['readmeVersions']}
 
-{text['changes']}
+{version_lines}
 
 {text['guideBody']} [{text['developerGuide']}](DEVELOPMENT.md).
 
@@ -145,6 +176,12 @@ zsh scripts/test_icons.sh
 ```sh
 zsh scripts/package.sh
 ```
+
+## {text['readmeCredits']}
+
+{text['credits']}
+
+{text['madeBy']}
 '''
     (ROOT / readmes[language]).write_text(markdown)
 
