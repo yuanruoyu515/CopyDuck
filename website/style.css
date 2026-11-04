@@ -7,6 +7,3 @@
 .features article:last-child{grid-column:1/-1;max-width:730px}
 
 /* Keep the compatibility notice visible before the download call to action. */
-.compatibility-warning { margin-top: 24px; padding: 18px 22px; border: 1px solid #e8b74f; border-left: 5px solid #b26b00; border-radius: 12px; background: #fff4d6; color: #553800; }
-.compatibility-warning strong { display: block; font-size: 16px; }
-.compatibility-warning p { margin: 8px 0 0; line-height: 1.7; }

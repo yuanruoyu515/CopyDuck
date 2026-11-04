@@ -135,8 +135,6 @@
       "pain": "💢 输入框不让粘贴，或者会区分粘贴与正常输入，让你只能重新手打一遍？",
       "originTitle": "💦 灵感来源",
       "origin": "作者在上 AP CSA 课时赶不完作业，偏偏 Albert 又被设置成不能粘贴，只好反复修改输入法的快捷输入词，把文字一点点塞进去……于是，就有了复制鸭。",
-      "compatibilityWarningTitle": "兼容性与资源占用提醒",
-      "compatibilityWarning": "目前仅在 macOS 27.0.1 上验证，不保证 macOS 27 以下版本可用。已有用户反馈：修复前版本在 macOS 26 上出现内存与 CPU 占用异常飙升；新版在该系统上的表现仍待验证。如遇异常，请立即退出复制鸭；无法退出时，可在活动监视器中结束 CopyDuck 进程。",
       "readmeBannerAlt": "复制鸭 CopyDuck：在不让粘贴的输入框里，按 ⌃⌥V 让小鸭子把剪贴板文字打进去",
       "readmeQuick": "三步用起来",
       "readmeLatest": "下载最新版",
@@ -145,7 +143,7 @@
       "requirements": [
         [
           "芯片",
-          "Apple Silicon（暂无 Intel 版本）"
+          "只有 Apple Silicon 版本"
         ],
         [
           "系统",
@@ -328,8 +326,6 @@
       "pain": "💢 輸入框不讓貼上，或是會區分貼上與一般輸入，讓你只能重新手打一遍？",
       "originTitle": "💦 靈感來源",
       "origin": "作者上 AP CSA 課時趕不完作業，偏偏 Albert 又被設定成不能貼上，只好反覆修改輸入法的快捷輸入詞，把文字一點一點塞進去……於是，就有了複製鴨。",
-      "compatibilityWarningTitle": "相容性與資源占用提醒",
-      "compatibilityWarning": "目前僅在 macOS 27.0.1 上驗證，不保證 macOS 27 以下版本可用。已有使用者回報：修復前版本在 macOS 26 上出現記憶體與 CPU 使用量異常飆升；新版在該系統上的表現仍待驗證。如遇異常，請立即結束複製鴨；無法結束時，可在「活動監視器」中結束 CopyDuck 程序。",
       "readmeBannerAlt": "複製鴨 CopyDuck：在不讓貼上的輸入框裡，按 ⌃⌥V 讓小鴨子把剪貼簿文字打進去",
       "readmeQuick": "三步用起來",
       "readmeLatest": "下載最新版",
@@ -338,7 +334,7 @@
       "requirements": [
         [
           "晶片",
-          "Apple Silicon（暫無 Intel 版本）"
+          "只有 Apple Silicon 版本"
         ],
         [
           "系統",
@@ -521,8 +517,6 @@
       "pain": "💢 An input field blocks pasting or distinguishes pasted text from regular input, leaving you to type everything again?",
       "originTitle": "💦 The inspiration",
       "origin": "The author was struggling to finish assignments in AP CSA when Albert was configured to block pasting. The workaround was to keep changing the input method’s text shortcuts to get the text into the field, bit by bit… That frustration led to CopyDuck.",
-      "compatibilityWarningTitle": "Compatibility and resource usage warning",
-      "compatibilityWarning": "Currently verified only on macOS 27.0.1. Compatibility with macOS versions earlier than 27 is not guaranteed. A user reported extremely high memory and CPU usage on macOS 26 with a version released before the startup fix; the newer version has not yet been verified on that system. If this occurs, quit CopyDuck; if it is unresponsive, end its process in Activity Monitor.",
       "readmeBannerAlt": "CopyDuck: press ⌃⌥V in a field that blocks pasting and the duck types your clipboard text in",
       "readmeQuick": "Three steps",
       "readmeLatest": "Download the latest version",
@@ -531,7 +525,7 @@
       "requirements": [
         [
           "Chip",
-          "Apple Silicon (no Intel build yet)"
+          "Apple Silicon only"
         ],
         [
           "macOS",

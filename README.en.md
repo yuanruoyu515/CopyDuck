@@ -19,10 +19,6 @@
 
 **💦 The inspiration**　The author was struggling to finish assignments in AP CSA when Albert was configured to block pasting. The workaround was to keep changing the input method’s text shortcuts to get the text into the field, bit by bit… That frustration led to CopyDuck.
 
-> [!WARNING]
-> **Compatibility and resource usage warning**
-> Currently verified only on macOS 27.0.1. Compatibility with macOS versions earlier than 27 is not guaranteed. A user reported extremely high memory and CPU usage on macOS 26 with a version released before the startup fix; the newer version has not yet been verified on that system. If this occurs, quit CopyDuck; if it is unresponsive, end its process in Activity Monitor.
-
 ## <img src="assets/readme/icons/cursor-click.svg" width="20" height="20" align="top"> Features
 
 - **Your shortcut**: Start with ⌃⌥V, or choose your own in Settings.
@@ -89,7 +85,7 @@ Default shortcut: <kbd>⌃</kbd> <kbd>⌥</kbd> <kbd>V</kbd> (Control + Option +
 
 | | |
 | --- | --- |
-| Chip | Apple Silicon (no Intel build yet) |
+| Chip | Apple Silicon only |
 | macOS | Minimum build target macOS 14. Verified only on macOS 27.0.1 |
 | Input field | Must support system input methods. Some secure fields or custom controls may restrict input |
 | Signing | Locally signed, without Developer ID signing or Apple notarization |
