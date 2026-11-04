@@ -93,6 +93,8 @@ Class Companion 暂无可用作业，尚未完成该网站回归。模拟输入�
 
 ## 打包
 
+DMG 打包依赖要求 Python 3.10 及以上；可用 COPYDUCK_PYTHON=python3.13 zsh scripts/package.sh 指定创建虚拟环境的 Python。已有旧环境时，先移到备份位置，再重新打包。
+
 ```sh
 zsh scripts/package.sh
 ```
@@ -156,3 +158,9 @@ build/StartupIntegration check <build-number>
 ## 界面内容
 
 简体、繁体、英文文案统一维护在 `website/content.json`，避免三语说明与产品行为不一致。应用本身当前使用简体中文界面；介绍页的三种语言不会改变应用界面语言。
+
+## 1.2.3 正式版
+
+正式版构建编号为 15，沿用 1.2.3-beta.5 的 Safari 修复及三语界面。递增构建号以更新已安装的 beta 组件。README 和三语介绍页使用维护者提供的 beta.5 设置截图，并明确标注截图版本。安装包继续使用本机签名；平台验证范围及 Class Companion 回归限制沿用上述记录。
+
+正式版验证：输入调度、快捷键、会话归属、三语偏好、图标及启动锁检查通过；DMG 校验、应用签名及 ZIP 内版本检查通过，发布二进制不含测试触发入口。本机应用程序目录的启动器和已安装输入组件均已更新到 1.2.3 / build 15，设置窗口显示正式版版本号，后台仅运行一个输入组件。

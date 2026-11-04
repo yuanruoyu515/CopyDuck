@@ -26,6 +26,7 @@ Apple Silicon · Minimum build target: macOS 14 · Verified only on macOS 27.0.1
 
 | Version | Download | Notes |
 | --- | --- | --- |
+| 1.2.3 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.3/CopyDuck-1.2.3-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.3/CopyDuck-1.2.3-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2.3) |
 | 1.2.2 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.2/CopyDuck-1.2.2-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.2/CopyDuck-1.2.2-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2.2) |
 | 1.2.1 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.1/CopyDuck-1.2.1-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.1/CopyDuck-1.2.1-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2.1) |
 | 1.2 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.dmg) · [App ZIP](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.app.zip) | [Release notes](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2) |
@@ -40,16 +41,17 @@ Apple Silicon · Minimum build target: macOS 14 · Verified only on macOS 27.0.1
 - **Text stays on your Mac**：Reads the clipboard only when triggered. No history, no network connection.
 - **Simulated typing**：Switch between Normal and Simulated Typing in Settings or the menu bar. Medium, Fast and Very Fast average about 5, 10 and 20 characters per second, with pauses at punctuation and line breaks. Mode and speed are remembered; speed changes apply to the next request. Press the shortcut again, type manually or change input focus to stop. Text already entered is kept.
 - **Input reliability and resource cleanup**：Improve first-trigger behavior in Word and prevent unintended typing cancellation. Release the Settings view on close; clear text references, callbacks and scheduled tasks when input finishes or is cancelled.
+- **Three interface languages**：Use the globe in the top right of Settings to switch languages. Your choice is saved.
 
 ## A little duck, in real use.
 
-The Settings and menu bar screenshots were supplied by the maintainer while testing 1.2-beta.1 and show the new 1.2 features. The interface is in Simplified Chinese; ⌥D is a custom shortcut, while the default is ⌃⌥V.
+The maintainer supplied the Settings screenshot while testing 1.2.3-beta.5; it shows the language switcher in the top right. The other screenshots are from 1.2-beta.1. ⌥D is a custom shortcut; the default is ⌃⌥V.
 
 ### Settings window
 
 <img src="docs/assets/settings.png" alt="Settings window" width="560">
 
-Switch input modes and choose Medium, Fast or Very Fast in Settings, alongside shortcut and launch-at-login options.
+Click the globe in the top right to choose Simplified Chinese, Traditional Chinese or English. Settings also includes input mode, speed, shortcut and launch-at-login controls.
 
 ### System input sources
 
@@ -91,7 +93,7 @@ Choose “退出复制鸭” (Quit CopyDuck) in its menu. Before uninstalling, d
 
 ## Version history
 
-1.2.2 fixes startup process failures and repeated launches that cause excessive resource usage, and fixes Settings failing to open. 1.2.1 improves first-trigger behavior in Word, prevents unintended input cancellation, and strengthens resource cleanup when cancelling input or closing Settings. 1.2 adds Normal / Simulated Typing and three speeds; 1.1 fixes component startup and centers the icons; 1.0 preserves the original feature release.
+1.2.3 fixes intermittent input failures after automatic input-method switching in Safari, filters repeated shortcut presses while the key is held, and adds Simplified Chinese, Traditional Chinese and English interfaces. 1.2.2 fixes startup process failures and repeated launches that cause excessive resource usage, and fixes Settings failing to open. 1.2.1 improves first-trigger behavior in Word, prevents unintended input cancellation, and strengthens resource cleanup when cancelling input or closing Settings. 1.2 adds Normal / Simulated Typing and three speeds; 1.1 fixes component startup and centers the icons; 1.0 preserves the original feature release.
 
 Git history preserves stable and beta version tags. Maintain future changes on main. See the release workflow in [the development guide](DEVELOPMENT.md).
 
@@ -112,7 +114,7 @@ zsh scripts/test_typing.sh
 zsh scripts/test_icons.sh
 ```
 
-Generate an App ZIP and a drag-to-install DMG:
+Generate an App ZIP and a drag-to-install DMG (packaging dependencies require Python 3.10 or newer):
 
 ```sh
 zsh scripts/package.sh

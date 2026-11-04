@@ -1,5 +1,28 @@
 # 版本记录 / 版本紀錄 / Changelog
 
+## 1.2.3 — 2026-11-03
+
+**简体中文**
+
+- 修复 Safari 自动切换输入法后偶尔无法输入的问题，避免后台输入会话覆盖目标连接。
+- 按住快捷键只触发一次，松开后再次按下仍可停止输入。
+- 设置窗口右上角新增语言图标，可切换简体中文、繁體中文和 English，并保存选择。
+- 正式版构建编号 15，沿用 beta.5 的功能，更新 README 截图和下载链接。
+
+**繁體中文**
+
+- 修復 Safari 自動切換輸入法後偶爾無法輸入的問題，避免背景輸入工作階段覆蓋目標連線。
+- 按住快速鍵只觸發一次，放開後再次按下仍可停止輸入。
+- 設定視窗右上角新增語言圖示，可切換简体中文、繁體中文和 English，並儲存選擇。
+- 正式版組建編號 15，沿用 beta.5 的功能，更新 README 截圖與下載連結。
+
+**English**
+
+- Fix intermittent input failures after automatic input-method switching in Safari; prevent background input sessions from replacing the target connection.
+- Trigger once while the shortcut is held. Release and press again to stop typing.
+- Add a language icon in the top right of Settings with saved choices for Simplified Chinese, Traditional Chinese and English.
+- Stable build 15 retains the features from beta.5 and updates the README screenshot and download links.
+
 ## 1.2.3-beta.5 — 2026-11-03（本地测试 / 本機測試 / local testing）
 
 **简体中文**

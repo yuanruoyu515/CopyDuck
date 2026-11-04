@@ -8,7 +8,8 @@ OUT="$ROOT/.release/$VERSION"
 STAGE="$OUT/stage"
 MOUNT="$OUT/volume"
 mkdir -p "$STAGE/.background" "$MOUNT"
-if [[ ! -x .venv/bin/python ]]; then python3 -m venv .venv; fi
+if [[ ! -x .venv/bin/python ]]; then "${COPYDUCK_PYTHON:-python3}" -m venv .venv; fi
+.venv/bin/python -c 'import sys; sys.exit("DMG packaging requires Python 3.10+. Recreate .venv with a newer Python.") if sys.version_info < (3, 10) else None'
 .venv/bin/python -m pip install -r scripts/requirements-dmg.txt
 ditto build/复制鸭.app "$STAGE/复制鸭.app"
 ln -sfn /Applications "$STAGE/应用程序"

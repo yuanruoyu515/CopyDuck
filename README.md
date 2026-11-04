@@ -26,6 +26,7 @@ Apple Silicon · 构建最低版本 macOS 14 · 仅在 macOS 27.0.1 上验证
 
 | 版本 | 下载 | 说明 |
 | --- | --- | --- |
+| 1.2.3 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.3/CopyDuck-1.2.3-arm64.dmg) · [App 压缩包](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.3/CopyDuck-1.2.3-arm64.app.zip) | [发布说明](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2.3) |
 | 1.2.2 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.2/CopyDuck-1.2.2-arm64.dmg) · [App 压缩包](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.2/CopyDuck-1.2.2-arm64.app.zip) | [发布说明](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2.2) |
 | 1.2.1 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.1/CopyDuck-1.2.1-arm64.dmg) · [App 压缩包](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2.1/CopyDuck-1.2.1-arm64.app.zip) | [发布说明](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2.1) |
 | 1.2 | [DMG](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.dmg) · [App 压缩包](https://github.com/yuanruoyu515/CopyDuck/releases/download/v1.2/CopyDuck-1.2-arm64.app.zip) | [发布说明](https://github.com/yuanruoyu515/CopyDuck/releases/tag/v1.2) |
@@ -40,16 +41,17 @@ Apple Silicon · 构建最低版本 macOS 14 · 仅在 macOS 27.0.1 上验证
 - **文字留在本机**：按快捷键时才读取剪贴板，不保存历史，不连接网络。
 - **模拟输入**：在设置或菜单栏切换普通模式／模拟输入。中速、快速、特别快约为每秒 5、10、20 字，标点和换行稍作停顿。模式和速度会记住；速度调整从下次输入生效。再次按快捷键、手动打字或切换输入位置可停止，已输入的文字会保留。
 - **输入稳定与资源清理**：改善 Word 首次触发和模拟输入误停。关闭设置时释放界面；输入结束或取消后清理文字引用、回调和定时任务。
+- **三语界面**：点击设置窗口右上角的地球图标切换语言，选择会自动保存。
 
 ## 真实界面，轻巧直观。
 
-设置窗口和菜单栏截图由维护者试用 1.2-beta.1 时提供，展示 1.2 新增功能。界面为简体中文；⌥D 是自定义快捷键，默认是 ⌃⌥V。
+设置窗口截图由维护者试用 1.2.3-beta.5 时提供，展示右上角的语言切换；其余截图来自 1.2-beta.1。⌥D 是自定义快捷键，默认是 ⌃⌥V。
 
 ### 设置窗口
 
 <img src="docs/assets/settings.png" alt="设置窗口" width="560">
 
-在设置中切换输入模式，选择中速、快速或特别快，并调整快捷键和开机启动。
+点击右上角地球图标，可切换简体中文、繁體中文或 English；也可调整输入模式、速度、快捷键和开机启动。
 
 ### 系统输入法列表
 
@@ -91,7 +93,7 @@ Apple Silicon · 构建最低版本 macOS 14 · 仅在 macOS 27.0.1 上验证
 
 ## 版本记录
 
-1.2.2 修复进程无法正确运行、重复启动造成大量资源占用的问题，并修复设置窗口无法正常打开。 1.2.1 改善 Word 首次触发和输入误停，强化取消任务与关闭设置时的内存清理。1.2 增加普通模式／模拟输入切换和三档打字速度；1.1 修复组件自动启动并调整图标；1.0 保留最初的功能版本。
+1.2.3 修复 Safari 自动切换输入法后偶尔无法输入的问题，过滤按住快捷键时的重复触发，并新增简体中文、繁體中文和 English 界面。 1.2.2 修复进程无法正确运行、重复启动造成大量资源占用的问题，并修复设置窗口无法正常打开。 1.2.1 改善 Word 首次触发和输入误停，强化取消任务与关闭设置时的内存清理。1.2 增加普通模式／模拟输入切换和三档打字速度；1.1 修复组件自动启动并调整图标；1.0 保留最初的功能版本。
 
 Git 历史保留各正式版本与 beta 标签；后续修改在 main 分支维护。发布流程见 [开发说明](DEVELOPMENT.md).
 
@@ -112,7 +114,7 @@ zsh scripts/test_typing.sh
 zsh scripts/test_icons.sh
 ```
 
-生成 App 压缩包和带拖拽布局的 DMG：
+生成 App 压缩包和带拖拽布局的 DMG（打包依赖要求 Python 3.10 及以上）：
 
 ```sh
 zsh scripts/package.sh
