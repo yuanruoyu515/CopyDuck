@@ -86,22 +86,6 @@ private final class Clock {
             precondition(count == long.count && completions == 2)
         }
 
-        // Delayed source/client readiness must connect once in either input mode.
-        for mode in InputMode.allCases {
-            let clock = Clock(), sequence = clock.sequence()
-            let waiter = InputConnectionWaiter(schedule: clock.schedule, now: { clock.elapsed })
-            var output = "", ready = false, connections = 0
-            waiter.start(timeout: 3, ready: { ready && clock.elapsed >= 0.12 }, connected: {
-                connections += 1
-                if mode == .normal { output += "首次输入🦆" }
-                else { sequence.start(text: "首次输入🦆", speed: .fast, write: { output += $0; return true }, completion: { precondition($0) }) }
-            }, expired: { preconditionFailure("Ready client timed out") })
-            precondition(output.isEmpty)
-            clock.advance(); clock.advance(); ready = true
-            clock.drain()
-            precondition(output == "首次输入🦆" && connections == 1)
-        }
-
         // An unsubmitted character can wait briefly; submitted characters never replay.
         do {
             let clock = Clock(), sequence = clock.sequence()
@@ -116,19 +100,6 @@ private final class Clock {
             attempts = 0
             sequence.start(text: "不应写入", speed: .fast, attempt: { _ in attempts += 1; return .retry }, completion: { precondition(!$0) })
             clock.drain(); precondition(attempts == 26 && clock.jobs.isEmpty)
-        }
-
-        // Cancelled/racing callbacks cannot expire or deliver a later request.
-        do {
-            let clock = Clock()
-            let waiter = InputConnectionWaiter(schedule: clock.schedule, now: { clock.elapsed })
-            var completed = 0, expired = 0
-            waiter.start(timeout: 0.1, ready: { false }, connected: { completed += 1 }, expired: { expired += 1 })
-            let stale = clock.jobs[0].action
-            waiter.stop(); precondition(clock.jobs.isEmpty)
-            waiter.start(timeout: 0.1, ready: { false }, connected: { completed += 1 }, expired: { expired += 1 })
-            stale(); precondition(clock.jobs.count == 1)
-            clock.drain(); precondition(completed == 0 && expired == 1)
         }
 
         // Stop, completion and owner destruction release session captures and timers.
@@ -153,24 +124,13 @@ private final class Clock {
         }
         do {
             let clock = Clock(), sequence = clock.sequence()
-            let waiter = InputConnectionWaiter(schedule: clock.schedule, now: { clock.elapsed })
             // 1,000 starts/cancels: no accumulated timers or captured payloads.
             let long = String(repeating: "长文本🦆", count: 100_000)
             for _ in 0..<1_000 {
                 sequence.start(text: long, speed: .medium, write: { _ in true }, completion: { _ in })
                 precondition(clock.jobs.count == 1)
                 sequence.stop(); precondition(clock.jobs.isEmpty)
-                waiter.start(timeout: 3, ready: { false }, connected: {}, expired: {})
-                precondition(clock.jobs.count == 1)
-                waiter.stop(); precondition(clock.jobs.isEmpty)
             }
-            weak var released: Payload?
-            do {
-                let payload = Payload(); released = payload
-                waiter.start(timeout: 3, ready: { [payload] in _ = payload.text; return false }, connected: {}, expired: {})
-            }
-            precondition(released != nil)
-            waiter.stop(); precondition(released == nil)
         }
 
         // The real dispatch scheduler also drops captures immediately on cancellation,
@@ -188,14 +148,6 @@ private final class Clock {
             cancel?(); precondition(released == nil)
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.06))
         }
-        do {
-            let clock = Clock()
-            let waiter = InputConnectionWaiter(schedule: clock.schedule, now: { clock.elapsed })
-            waiter.start(timeout: 3, ready: { waiter.stop(); return true },
-                         connected: { preconditionFailure("Cancelled readiness delivered") }, expired: {})
-            precondition(clock.jobs.isEmpty)
-        }
-
         // Speed ratios, jitter limits, and longer punctuation/newline pauses.
         for speed in TypingSpeed.allCases {
             let base = 1.0 / Double(speed.charactersPerSecond)
@@ -221,6 +173,6 @@ private final class Clock {
         defaults.set("invalid", forKey: "inputMode"); defaults.set("invalid", forKey: "typingSpeed")
         precondition(InputPreferences.mode(in: defaults) == .normal)
         precondition(InputPreferences.speed(in: defaults) == .medium)
-        print("PASS: Unicode, selection, delayed connection in both modes, bounded reconnect, cancellation races, 1,000 long-text cancellations, capture/timer release, speeds and preferences")
+        print("PASS: Unicode, selection, bounded reconnect, cancellation races, 1,000 long-text cancellations, capture/timer release, speeds and preferences")
     }
 }

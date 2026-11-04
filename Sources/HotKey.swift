@@ -34,14 +34,26 @@ struct Shortcut: Codable, Equatable {
     }
 }
 
+struct HotKeyPressState {
+    private var down = false
+    mutating func receive(pressed: Bool) -> Bool {
+        if !pressed { down = false; return false }
+        guard !down else { return false }
+        down = true
+        return true
+    }
+}
+
 final class HotKey {
     private var reference: EventHotKeyRef?
     private var handler: EventHandlerRef?
     private var generation: UInt32 = 0
+    private var pressState = HotKeyPressState()
     private let logger = Logger(subsystem: InputSources.bundleID, category: "HotKey")
     var action: (() -> Void)?
     init() {
-        var type = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
+        var types = [EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed)),
+                     EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyReleased))]
         let installed = InstallEventHandler(GetEventDispatcherTarget(), { _, event, data in
             guard let data, let event else { return OSStatus(eventNotHandledErr) }
             let object = Unmanaged<HotKey>.fromOpaque(data).takeUnretainedValue()
@@ -49,10 +61,11 @@ final class HotKey {
             let result = GetEventParameter(event, EventParamName(kEventParamDirectObject), EventParamType(typeEventHotKeyID), nil,
                                            MemoryLayout<EventHotKeyID>.size, nil, &id)
             guard result == noErr, id.signature == 0x4455434B, id.id == object.generation else { return OSStatus(eventNotHandledErr) }
+            guard object.pressState.receive(pressed: GetEventKind(event) == UInt32(kEventHotKeyPressed)) else { return noErr }
             object.logger.info("Global shortcut received")
             object.action?()
             return noErr
-        }, 1, &type, Unmanaged.passUnretained(self).toOpaque(), &handler)
+        }, types.count, &types, Unmanaged.passUnretained(self).toOpaque(), &handler)
         logger.info("Shortcut handler installed: \(installed)")
     }
     func register(_ shortcut: Shortcut) -> OSStatus {
@@ -63,7 +76,7 @@ final class HotKey {
         logger.info("Shortcut registration: \(result), key \(shortcut.keyCode), modifiers \(shortcut.modifiers)")
         guard result == noErr else { return result }
         if let reference { UnregisterEventHotKey(reference) }
-        reference = next; generation = nextGeneration
+        reference = next; generation = nextGeneration; pressState = HotKeyPressState()
         return result
     }
     deinit {

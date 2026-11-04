@@ -9,3 +9,6 @@ swiftc -module-cache-path build/module-cache -swift-version 5 \
   Sources/InputSources.swift Sources/HotKey.swift Tests/ShortcutEvents.swift \
   -framework AppKit -framework Carbon -o build/ShortcutEventTests
 build/ShortcutEventTests
+swiftc -module-cache-path build/module-cache -swift-version 5 \
+  Sources/Typing.swift Sources/InputPreparation.swift Tests/InputPreparationTests.swift -o build/InputPreparationTests
+build/InputPreparationTests

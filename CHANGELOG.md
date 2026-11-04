@@ -1,5 +1,31 @@
 # 版本记录 / 版本紀錄 / Changelog
 
+## 1.2.3-beta.4 — 2026-11-03（本地测试 / 本機測試 / local testing）
+
+**简体中文**
+
+- 修复后台应用的输入会话覆盖 Safari 连接的问题。键盘设置预览等非目标会话不再打断本次输入。
+- 针对 Safari 自动切换后无法输入的情况，改为离开快捷键回调后再切换，修饰键等待最多 0.15 秒，并等待新连接及有效输入位置。Safari 短暂停用连接时，仅使用本次请求中出现过的目标连接，并通过实时输入位置查询确认可用性。首次连接未就绪时最多重连一次；提交后的文字不重发。
+- 按住快捷键只触发一次，松开后再次按下仍可取消；避免系统按键重复让输入自我取消。
+- 等待期间更换输入法会取消请求；点击其他位置会停止等待或输入。旧快捷键的转发拦截不再永久保留。
+- 构建编号 13。通过编译、签名、输入调度、资源释放、图标及启动检查。维护者确认 Safari 已正常工作，日志记录连续 4 次普通模式提交；Class Companion 作业环境暂不可用，尚未完成该网站回归。本地 beta 未发布到 GitHub Releases。
+
+**繁體中文**
+
+- 修復背景應用程式的輸入工作階段覆蓋 Safari 連線的問題。鍵盤設定預覽等非目標工作階段不再中斷本次輸入。
+- 針對 Safari 自動切換後無法輸入的情況，改為離開快捷鍵回呼後再切換，修飾鍵等待最多 0.15 秒，並等待新連線及有效輸入位置。Safari 暫時停用連線時，僅使用本次請求中出現過的目標連線，並透過即時輸入位置查詢確認可用性。首次連線未就緒時最多重新連線一次；提交後的文字不重送。
+- 按住快捷鍵只觸發一次，放開後再按仍可取消；避免系統按鍵重複讓輸入自行取消。
+- 等待期間更換輸入法會取消請求；點選其他位置會停止等待或輸入。舊快捷鍵的轉送攔截不再永久保留。
+- 組建編號 13。通過建置、簽署、輸入排程、資源釋放、圖示及啟動檢查。維護者確認 Safari 已正常運作，記錄顯示連續 4 次一般模式提交；Class Companion 作業環境暫不可用，尚未完成該網站回歸。本機 beta 未發布至 GitHub Releases。
+
+**English**
+
+- Prevent background input sessions, including Keyboard Settings previews, from replacing Safari’s connection or interrupting delivery.
+- Address Safari input failures after automatic source switching by deferring selection out of the hot-key callback, allowing up to 0.15 seconds for modifier release, and waiting for a fresh connection and valid insertion position. If Safari temporarily deactivates its client, validate the connection observed during this request with a live selection query. Retry the initial connection at most once; never replay submitted text.
+- Ignore repeated hot-key press events while the key is held. Releasing and pressing again still cancels input.
+- Cancel when the input source changes while waiting, or when the user clicks elsewhere. Expire forwarded shortcut suppression instead of retaining it indefinitely.
+- Build 13. Compilation, signatures, input scheduling, resource release, icons and startup checks passed. The maintainer confirmed Safari now works; logs show four consecutive Normal-mode submissions. Class Companion regression testing remains pending because no assignment environment is available. This local beta has not been published to GitHub Releases.
+
 ## 1.2.2 — 2026-10-20
 
 **简体中文**

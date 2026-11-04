@@ -63,40 +63,6 @@ enum MainScheduler {
     }
 }
 
-// Wait outside IMK activation callbacks for both the input source and client to settle.
-final class InputConnectionWaiter {
-    private let schedule: MainScheduler.Schedule
-    private let now: () -> TimeInterval
-    private var cancelScheduled: MainScheduler.Cancel?
-    private var generation: UUID?
-
-    init(schedule: @escaping MainScheduler.Schedule = MainScheduler.schedule,
-         now: @escaping () -> TimeInterval = { ProcessInfo.processInfo.systemUptime }) {
-        self.schedule = schedule; self.now = now
-    }
-    func start(timeout: TimeInterval, ready: @escaping () -> Bool,
-               connected: @escaping () -> Void, expired: @escaping () -> Void) {
-        stop()
-        let id = UUID(); generation = id
-        poll(id: id, deadline: now() + timeout, ready: ready, connected: connected, expired: expired)
-    }
-    private func poll(id: UUID, deadline: TimeInterval, ready: @escaping () -> Bool,
-                      connected: @escaping () -> Void, expired: @escaping () -> Void) {
-        guard generation == id else { return }
-        let isReady = ready()
-        guard generation == id else { return }
-        if isReady { stop(); connected(); return }
-        if now() >= deadline { stop(); expired(); return }
-        cancelScheduled = schedule(0.03) { [weak self] in
-            guard let self, self.generation == id else { return }
-            self.cancelScheduled = nil
-            self.poll(id: id, deadline: deadline, ready: ready, connected: connected, expired: expired)
-        }
-    }
-    func stop() { generation = nil; cancelScheduled?(); cancelScheduled = nil }
-    deinit { cancelScheduled?() }
-}
-
 final class TypingSequence {
     enum Attempt { case inserted, retry, stopped }
     private struct Session {
